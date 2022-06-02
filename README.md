@@ -13,7 +13,7 @@ What is the impact of adding a drinking water - based indicator to the Justice40
 ## Data
 
 1. The existing [CEJST tract layer](https://screeningtool.geoplatform.gov/en/downloads)
-2. The SDWIS ["Serious Violator" List](https://echo.epa.gov/files/echodownloads/SDWA_latest_downloads.zip)
+2. The SDWIS ["Serious Violator" List](https://echo.epa.gov/files/echodownloads/SDWA_latest_downloads.zip) Instead we need to do all health-based MCL violations
 3. The SimpleLab WSB layer 
 
 ## Methods
