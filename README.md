@@ -25,7 +25,7 @@ What is the impact of adding a drinking water - based indicator to the Justice40
 
 3. Join by PWSID the SDWIS serious violator list. Construct PWSID-level variables = ```on serious violator list for at least one quarter in the last year/5 years/ 10 years```
 
-4. Calculate the research metrics, using the tracts interseting the Tier 1 boundary subset at the baseline
+4. Calculate the research metrics, using the tracts interseting the Tier 1 boundary subset as the baseline. As a secondary baseline, we can use another comparison with Utah's current estimated boundaries with Utah's DWR-provided boundaries. 
 
 ## Outputs
 
