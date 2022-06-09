@@ -169,4 +169,4 @@ A brief review of the literature follows.
 
 ## Proposed metric
 
-Binary indicator, which is if the system experienced more than 1 month in violation of any health-based standard in the past two years. Discussion can modify the month and year periods. I believe giving a grace period for 1 month over two years leaves room for true fluke events for utilitities that otherwise have good process control. I can also simply create the metric for a few combinations and we can see what seems reasonable.
+Binary indicator, which is if the system experienced more than 1 month in health-based violation in the past two years. Discussion can modify the month and year periods. I believe giving a grace period for 1 month over two years leaves room for true fluke events for utilitities that otherwise have good process control. I can also simply create the metric for a few combinations and we can see what seems reasonable.
