@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.449">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Kyle Onda">
+
+<title>Federal WSB Case Study</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<script src="run_files/libs/clipboard/clipboard.min.js"></script>
+<script src="run_files/libs/quarto-html/quarto.js"></script>
+<script src="run_files/libs/quarto-html/popper.min.js"></script>
+<script src="run_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="run_files/libs/quarto-html/anchor.min.js"></script>
+<link href="run_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link class="quarto-color-scheme" id="quarto-text-highlighting-styles" href="run_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
+<link class="quarto-color-scheme quarto-color-alternate" rel="prefetch" id="quarto-text-highlighting-styles" href="run_files/libs/quarto-html/quarto-syntax-highlighting-dark.css">
+<script src="run_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="run_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link class="quarto-color-scheme" href="run_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link class="quarto-color-scheme quarto-color-alternate" rel="prefetch" href="run_files/libs/bootstrap/bootstrap-dark.min.css">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#initialization" id="toc-initialization" class="nav-link active" data-scroll-target="#initialization">Initialization</a>
+  <ul class="collapse">
+  <li><a href="#download-sdwis-violations-data" id="toc-download-sdwis-violations-data" class="nav-link" data-scroll-target="#download-sdwis-violations-data">Download SDWIS Violations Data</a></li>
+  <li><a href="#download-temm-data" id="toc-download-temm-data" class="nav-link" data-scroll-target="#download-temm-data">Download TEMM Data</a></li>
+  <li><a href="#load-compressed-data" id="toc-load-compressed-data" class="nav-link" data-scroll-target="#load-compressed-data">Load compressed data</a></li>
+  </ul></li>
+  <li><a href="#defining-a-drinking-water-environmental-justice-indicator" id="toc-defining-a-drinking-water-environmental-justice-indicator" class="nav-link" data-scroll-target="#defining-a-drinking-water-environmental-justice-indicator">Defining a drinking water environmental justice indicator</a>
+  <ul class="collapse">
+  <li><a href="#proposed-metric" id="toc-proposed-metric" class="nav-link" data-scroll-target="#proposed-metric">Proposed metric</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Federal WSB Case Study</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Kyle Onda </p>
+          </div>
+  </div>
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="initialization" class="level1">
+<h1>Initialization</h1>
+<p>We require the following packages:</p>
+<section id="download-sdwis-violations-data" class="level2">
+<h2 class="anchored" data-anchor-id="download-sdwis-violations-data">Download SDWIS Violations Data</h2>
+<p>Here we download all of the SDWIS data, and save to a compressed local file</p>
+<div class="cell">
+<details>
+<summary>show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">"https://echo.epa.gov/files/echodownloads/SDWA_latest_downloads.zip"</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">destfile =</span> <span class="st">"../data/sdwa.zip"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"../data/sdwa.zip"</span>, <span class="at">exdir=</span><span class="st">"../data/sdwa"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../data/sdwa/SDWA_VIOLATIONS_ENFORCEMENT.csv"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(x,<span class="st">"../data/viol.qs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="download-temm-data" class="level2">
+<h2 class="anchored" data-anchor-id="download-temm-data">Download TEMM Data</h2>
+<p>Here we download the service boundaries layer, saving to a local compressed file</p>
+<div class="cell">
+<details>
+<summary>show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>temm <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"https://www.hydroshare.org/resource/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(temm, <span class="st">"../data/temm.qs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="load-compressed-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-compressed-data">Load compressed data</h2>
+<p>Here we load the compressed data</p>
+<div class="cell">
+<details>
+<summary>show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/viol.qs"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/temm.qs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="defining-a-drinking-water-environmental-justice-indicator" class="level1">
+<h1>Defining a drinking water environmental justice indicator</h1>
+<p>The purpose of this exercise is to quantify the extent to which adding a drinking water quality-based indicator to the Climate and Environmental Justice Screening Tool would change the universe of “communities” (2010 Census Tract geographies) that are highlighted. To do this, we need to construct a binary indicator that corresponds to some drinking-water related risk. The most common way to do this is to calculate an indicator variable based on drinking water violations data from the U.S. EPA SDWIS database. Here, I review and go over the pros and cons of the most common approaches in governance and the literature. First, some necessary terminology:</p>
+<dl>
+<dt>Violation</dt>
+<dd>
+<p>A violation of regulations of the Safe Drinking Water Act</p>
+</dd>
+<dt>Maximum Contaminant Level (MCL) Violation</dt>
+<dd>
+<p>When a concentration of a contaminant is detected to be above the limit allowed in drinking water standards.</p>
+</dd>
+<dt>Total Coliform Rule</dt>
+<dd>
+<p>A group of maximum contaminant levels and monitoring requirements for the presence of total coliform, fecal coliform, and <em>E. coli</em> bacteria.</p>
+</dd>
+<dt>Maximum Residual Disinfectant Level (MRDL) Violations</dt>
+<dd>
+<p>When a concentration of a disinfectant residual is detected to be above the limit allowed in drinking water standards.</p>
+</dd>
+<dt>Treatment Technique (TT) rule Violations</dt>
+<dd>
+<p>When specified treatment techniques required for a system’s water source are not applied.</p>
+</dd>
+<dt>Health-based violations</dt>
+<dd>
+<p>Violations that are directly related to health risks in drinking water. Corresponds to all MCL, MRDL, and TT violations.</p>
+</dd>
+<dt>Monitoring and reporting (MR) violations</dt>
+<dd>
+<p>Failure to conduct drinking water quality tests or to submit the results of those tests in a timely fashion to USEPA or the primacy agency.</p>
+</dd>
+<dt>Other Violations</dt>
+<dd>
+<p>A USEPA catch-all category for other violations, which are generally either about conducting sanitary surveys of the system or about reporting their test results to the public or water systems they are interconnected with.</p>
+</dd>
+<dt>Compliance</dt>
+<dd>
+<p>Being in a state of not violating a relevant regulation</p>
+</dd>
+<dt>Compliance period</dt>
+<dd>
+<p>A period of time when a water system was in violation of a drinking water regulation</p>
+</dd>
+</dl>
+<p>There are a few considerations in constructing a binary violation indicator:</p>
+<ol type="1">
+<li>What types of violations count? MCL only? Health-based only? All?</li>
+<li>What contaminants should count in the case of MCL violations? Those monitored under the Total Coliform Rule? Lead and Copper Rule? Nitrates? All?</li>
+<li>How long does a violation need to last to be counted? 0 time? 1 month? 1 year?</li>
+<li>Over what time period do they count? The past year? 2 years? 5 years? Forever?</li>
+</ol>
+<p>A brief review of the literature follows.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Description of metric</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>EPA “Enforcement Priority” (formerly “Serious Violator”), a threshold composed of points weighted towards TCR violations, other health-based violations, and repeated reporting violations over a rolling 5-year period. <a href="https://www.epa.gov/sites/default/files/documents/drinking_water_erp_2009.pdf">See here</a>. Does not count violations that are returned to compliance or are undergoing a verified enforcement action.</td>
+<td><ul>
+<li><p>Already used by USEPA to prioritize enforcement efforts, legitimating use in CEJST</p></li>
+<li><p>Weighs violations on certain contaminants more highly based on relative risks to health</p></li>
+<li><p>Includes monitoring violations in a scaled manner, focusing on repeat violations.</p></li>
+<li><p>Cares about the speed of return to compliance, i.e.&nbsp;some measure of the temporal aspect of a health risk exposure</p></li>
+</ul></td>
+<td><ul>
+<li><p>May be considered stigmatizing by utility community</p></li>
+<li><p>Opaque, masks the difference between contaminant exposures and negligent monitoring or reporting</p></li>
+<li><p>Includes non-health based violations that may not be desirable in a “access to safe water” oriented indicator</p></li>
+<li><p>Not including violations with enforcement actions may underestimate current health risks to the service population</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td>All violations, over a multi-year period <span class="citation" data-cites="wallsten2008 konisky2015 marcillo2019">(<a href="#ref-wallsten2008" role="doc-biblioref">Wallsten and Kosec 2008</a>; <a href="#ref-konisky2015" role="doc-biblioref">Konisky and Teodoro 2015</a>; <a href="#ref-marcillo2019" role="doc-biblioref">Marcillo and Krometis 2019</a>)</span></td>
+<td><ul>
+<li>Simple to calculate</li>
+<li>Including monitoring violations captures governance and capacity problems that can undermine the ability of water systems to respond to the needs of their customers.</li>
+</ul></td>
+<td><ul>
+<li>Including monitoring violations may not be appropriate to a health/exposure-based metric</li>
+</ul></td>
+</tr>
+<tr class="odd">
+<td>TCR MCL violations only, on an annual basis <span class="citation" data-cites="allaire2018">(<a href="#ref-allaire2018" role="doc-biblioref">Allaire, Wu, and Lall 2018</a>)</span></td>
+<td><ul>
+<li>There is some <a href="https://nepis.epa.gov/Exe/ZyPURL.cgi?Dockey=P100529K.TXT">evidence</a> that TCR violations are the most systematically reported. Other violations may give a biased estimate.</li>
+</ul></td>
+<td><ul>
+<li><p>Does not count the many documented cases of other kinds of violations</p></li>
+<li><p>The “bias” evidence is from 2000 and may not be as relevant today</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td>All MCL violations over a multi-year period <span class="citation" data-cites="dobbin2021 switzer2017">(<a href="#ref-dobbin2021" role="doc-biblioref">Dobbin and Fencl 2021</a>; <a href="#ref-switzer2017" role="doc-biblioref">Switzer and Teodoro 2017</a>)</span></td>
+<td><ul>
+<li>Intuitive appeal for considering all contaminants a potential health risk exposure</li>
+</ul></td>
+<td><ul>
+<li><p>MRDLs and treatment failures are also important health risk exposures</p></li>
+<li><p>Does not capture institutional risks associated with monitoring/ reporting violations</p></li>
+</ul></td>
+</tr>
+<tr class="odd">
+<td>All Health-Based Violations over a multi-year period <span class="citation" data-cites="dobbin2021 switzer2017">(<a href="#ref-dobbin2021" role="doc-biblioref">Dobbin and Fencl 2021</a>; <a href="#ref-switzer2017" role="doc-biblioref">Switzer and Teodoro 2017</a>)</span></td>
+<td><ul>
+<li>Intuitive appeal for considering all health-based violations</li>
+</ul></td>
+<td><ul>
+<li>Does not capture institutional risks associated with monitoring/ reporting violations</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<section id="proposed-metric" class="level2">
+<h2 class="anchored" data-anchor-id="proposed-metric">Proposed metric</h2>
+<p>Binary indicator, which is if the system experienced more than 1 month in violation of any health-based standard in the past two years. Discussion can modify the month and year periods. I believe giving a grace period for 1 month over two years leaves room for true fluke events for utilitities that otherwise have good process control. I can also simply create the metric for a few combinations and we can see what seems reasonable.</p>
+<!-- -->
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-allaire2018" class="csl-entry" role="doc-biblioentry">
+Allaire, Maura, Haowei Wu, and Upmanu Lall. 2018. <span>“National Trends in Drinking Water Quality Violations.”</span> <em>Proceedings of the National Academy of Sciences</em> 115 (9): 2078–83. <a href="https://doi.org/10.1073/pnas.1719805115">https://doi.org/10.1073/pnas.1719805115</a>.
+</div>
+<div id="ref-dobbin2021" class="csl-entry" role="doc-biblioentry">
+Dobbin, Kristin B., and Amanda L. Fencl. 2021. <span>“Institutional Diversity and Safe Drinking Water Provision in the United States.”</span> <em>Utilities Policy</em> 73 (December): 101306. <a href="https://doi.org/10.1016/j.jup.2021.101306">https://doi.org/10.1016/j.jup.2021.101306</a>.
+</div>
+<div id="ref-konisky2015" class="csl-entry" role="doc-biblioentry">
+Konisky, David M., and Manuel P. Teodoro. 2015. <span>“When Governments Regulate Governments.”</span> <em>American Journal of Political Science</em> 60 (3): 559–74. <a href="https://doi.org/10.1111/ajps.12221">https://doi.org/10.1111/ajps.12221</a>.
+</div>
+<div id="ref-marcillo2019" class="csl-entry" role="doc-biblioentry">
+Marcillo, Cristina E., and Leigh-Anne H. Krometis. 2019. <span>“Small Towns, Big Challenges: Does Rurality Influence Safe Drinking Water Act Compliance?”</span> <em>AWWA Water Science</em> 1 (1). <a href="https://doi.org/10.1002/aws2.1120">https://doi.org/10.1002/aws2.1120</a>.
+</div>
+<div id="ref-switzer2017" class="csl-entry" role="doc-biblioentry">
+Switzer, David, and Manuel P. Teodoro. 2017. <span>“Class, Race, Ethnicity, and Justice in Safe Drinking Water Compliance*.”</span> <em>Social Science Quarterly</em> 99 (2): 524–35. <a href="https://doi.org/10.1111/ssqu.12397">https://doi.org/10.1111/ssqu.12397</a>.
+</div>
+<div id="ref-wallsten2008" class="csl-entry" role="doc-biblioentry">
+Wallsten, Scott, and Katrina Kosec. 2008. <span>“The Effects of Ownership and Benchmark Competition: An Empirical Analysis of U.S. Water Systems.”</span> <em>International Journal of Industrial Organization</em> 26 (1): 186–205. <a href="https://doi.org/10.1016/j.ijindorg.2006.11.001">https://doi.org/10.1016/j.ijindorg.2006.11.001</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+    } else {
+      disableStylesheet(alternateStylesheets);
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Federal WSB Case Study"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Kyle Onda"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">    html-math-method: katex</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">    css: styles.css</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-summary: "show the code"</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-overflow: wrap</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">      light: flatly</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">      dark: slate</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="fu"># Initialization</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>We require the following packages:</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapview)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qs)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="fu">## Download SDWIS Violations Data</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>Here we download all of the SDWIS data, and save to a compressed local file</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">"https://echo.epa.gov/files/echodownloads/SDWA_latest_downloads.zip"</span>,</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>              <span class="at">destfile =</span> <span class="st">"../data/sdwa.zip"</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"../data/sdwa.zip"</span>, <span class="at">exdir=</span><span class="st">"../data/sdwa"</span>)</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../data/sdwa/SDWA_VIOLATIONS_ENFORCEMENT.csv"</span>)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(x,<span class="st">"../data/viol.qs"</span>)</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## Download TEMM Data</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>Here we download the service boundaries layer, saving to a local compressed file</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>temm <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"https://www.hydroshare.org/resource/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson"</span>)</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(temm, <span class="st">"../data/temm.qs"</span>)</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load compressed data</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>Here we load the compressed data</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/viol.qs"</span>)</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"../data/temm.qs"</span>)</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="fu"># Defining a drinking water environmental justice indicator</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>The purpose of this exercise is to quantify the extent to which adding a drinking water quality-based indicator to the Climate and Environmental Justice Screening Tool would change the universe of "communities" (2010 Census Tract geographies) that are highlighted. To do this, we need to construct a binary indicator that corresponds to some drinking-water related risk. The most common way to do this is to calculate an indicator variable based on drinking water violations data from the U.S. EPA SDWIS database. Here, I review and go over the pros and cons of the most common approaches in governance and the literature. First, some necessary terminology:</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>Violation</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>:   A violation of regulations of the Safe Drinking Water Act</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>Maximum Contaminant Level (MCL) Violation</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>:   When a concentration of a contaminant is detected to be above the limit allowed in drinking water standards.</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>Total Coliform Rule</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>:   A group of maximum contaminant levels and monitoring requirements for the presence of total coliform, fecal coliform, and *E. coli* bacteria.</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>Maximum Residual Disinfectant Level (MRDL) Violations</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>:   When a concentration of a disinfectant residual is detected to be above the limit allowed in drinking water standards.</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>Treatment Technique (TT) rule Violations</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>:   When specified treatment techniques required for a system's water source are not applied.</span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>Health-based violations</span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>:   Violations that are directly related to health risks in drinking water. Corresponds to all MCL, MRDL, and TT violations.</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>Monitoring and reporting (MR) violations</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>:   Failure to conduct drinking water quality tests or to submit the results of those tests in a timely fashion to USEPA or the primacy agency.</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>Other Violations</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>:   A USEPA catch-all category for other violations, which are generally either about conducting sanitary surveys of the system or about reporting their test results to the public or water systems they are interconnected with.</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>Compliance</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>:   Being in a state of not violating a relevant regulation</span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>Compliance period</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>:   A period of time when a water system was in violation of a drinking water regulation</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>There are a few considerations in constructing a binary violation indicator:</span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>What types of violations count? MCL only? Health-based only? All?</span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>What contaminants should count in the case of MCL violations? Those monitored under the Total Coliform Rule? Lead and Copper Rule? Nitrates? All?</span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>How long does a violation need to last to be counted? 0 time? 1 month? 1 year?</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Over what time period do they count? The past year? 2 years? 5 years? Forever?</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>A brief review of the literature follows.</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>| Description of metric                                                                                                                                                                                                                                                                                                                                                                                                          | Pros                                                                                                                                                                                          | Cons                                                                                                                   |</span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>+================================================================================================================================================================================================================================================================================================================================================================================================================================+===============================================================================================================================================================================================+========================================================================================================================+</span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>| EPA "Enforcement Priority" (formerly "Serious Violator"), a threshold composed of points weighted towards TCR violations, other health-based violations, and repeated reporting violations over a rolling 5-year period. <span class="co">[</span><span class="ot">See here</span><span class="co">](https://www.epa.gov/sites/default/files/documents/drinking_water_erp_2009.pdf)</span>. Does not count violations that are returned to compliance or are undergoing a verified enforcement action. | -   Already used by USEPA to prioritize enforcement efforts, legitimating use in CEJST                                                                                                        | -   May be considered stigmatizing by utility community                                                                |</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |</span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Weighs violations on certain contaminants more highly based on relative risks to health                                                                                                   | -   Opaque, masks the difference between contaminant exposures and negligent monitoring or reporting                   |</span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |</span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Includes monitoring violations in a scaled manner, focusing on repeat violations.                                                                                                         | -   Includes non-health based violations that may not be desirable in a "access to safe water" oriented indicator      |</span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |</span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Cares about the speed of return to compliance, i.e. some measure of the temporal aspect of a health risk exposure                                                                         | -   Not including violations with enforcement actions may underestimate current health risks to the service population |</span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+</span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>| All violations, over a multi-year period <span class="co">[</span><span class="ot">@wallsten2008; @konisky2015; @marcillo2019</span><span class="co">]</span>                                                                                                                                                                                                                                                                                                                                          | -   Simple to calculate                                                                                                                                                                       | -   Including monitoring violations may not be appropriate to a health/exposure-based metric                           |</span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Including monitoring violations captures governance and capacity problems that can undermine the ability of water systems to respond to the needs of their customers.                     |                                                                                                                        |</span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+</span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a>| TCR MCL violations only, on an annual basis <span class="co">[</span><span class="ot">@allaire2018</span><span class="co">]</span>                                                                                                                                                                                                                                                                                                                                                                     | -   There is some <span class="co">[</span><span class="ot">evidence</span><span class="co">](https://nepis.epa.gov/Exe/ZyPURL.cgi?Dockey=P100529K.TXT)</span> that TCR violations are the most systematically reported. Other violations may give a biased estimate. | -   Does not count the many documented cases of other kinds of violations                                              |</span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |</span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               | -   The "bias" evidence is from 2000 and may not be as relevant today                                                  |</span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>| All MCL violations over a multi-year period <span class="co">[</span><span class="ot">@dobbin2021; @switzer2017</span><span class="co">]</span>                                                                                                                                                                                                                                                                                                                                                        | -   Intuitive appeal for considering all contaminants a potential health risk exposure                                                                                                        | -   MRDLs and treatment failures are also important health risk exposures                                              |</span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |</span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               | -   Does not capture institutional risks associated with monitoring/ reporting violations                              |</span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+</span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>| All Health-Based Violations over a multi-year period <span class="co">[</span><span class="ot">@dobbin2021; @switzer2017</span><span class="co">]</span>                                                                                                                                                                                                                                                                                                                                               | -   Intuitive appeal for considering all health-based violations                                                                                                                              | -   Does not capture institutional risks associated with monitoring/ reporting violations                              |</span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+</span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="fu">## Proposed metric</span></span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>Binary indicator, which is if the system experienced more than 1 month in violation of any health-based standard in the past two years. Discussion can modify the month and year periods. I believe giving a grace period for 1 month over two years leaves room for true fluke events for utilitities that otherwise have good process control. I can also simply create the metric for a few combinations and we can see what seems reasonable.</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+</body></html>
