@@ -1,0 +1,146 @@
+---
+title: "Federal WSB Case Study"
+author: "Kyle Onda"
+format: 
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    html-math-method: katex
+    css: styles.css
+    code-fold: true
+    code-summary: "show the code"
+    code-overflow: wrap
+    code-tools: true
+    theme: 
+      light: flatly
+      dark: slate
+editor: visual
+bibliography: references.bib
+---
+
+# Initialization
+
+We require the following packages:
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(sf)
+library(mapview)
+library(qs)
+```
+
+## Download SDWIS Violations Data
+
+Here we download all of the SDWIS data, and save to a compressed local file
+
+```{r}
+#| eval: false
+download.file(url = "https://echo.epa.gov/files/echodownloads/SDWA_latest_downloads.zip",
+              destfile = "../data/sdwa.zip")
+unzip("../data/sdwa.zip", exdir="../data/sdwa")
+x <- readr::read_csv("../data/sdwa/SDWA_VIOLATIONS_ENFORCEMENT.csv")
+qsave(x,"../data/viol.qs")
+```
+
+## Download TEMM Data
+
+Here we download the service boundaries layer, saving to a local compressed file
+
+```{r}
+#| eval: false
+temm <- sf::read_sf("https://www.hydroshare.org/resource/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson")
+qsave(temm, "../data/temm.qs")
+```
+
+## Load compressed data
+
+Here we load the compressed data
+
+```{r}
+v <- qread("../data/viol.qs")
+g <- qread("../data/temm.qs")
+```
+
+# Defining a drinking water environmental justice indicator
+
+The purpose of this exercise is to quantify the extent to which adding a drinking water quality-based indicator to the Climate and Environmental Justice Screening Tool would change the universe of "communities" (2010 Census Tract geographies) that are highlighted. To do this, we need to construct a binary indicator that corresponds to some drinking-water related risk. The most common way to do this is to calculate an indicator variable based on drinking water violations data from the U.S. EPA SDWIS database. Here, I review and go over the pros and cons of the most common approaches in governance and the literature. First, some necessary terminology:
+
+Violation
+
+:   A violation of regulations of the Safe Drinking Water Act
+
+Maximum Contaminant Level (MCL) Violation
+
+:   When a concentration of a contaminant is detected to be above the limit allowed in drinking water standards.
+
+Total Coliform Rule
+
+:   A group of maximum contaminant levels and monitoring requirements for the presence of total coliform, fecal coliform, and *E. coli* bacteria.
+
+Maximum Residual Disinfectant Level (MRDL) Violations
+
+:   When a concentration of a disinfectant residual is detected to be above the limit allowed in drinking water standards.
+
+Treatment Technique (TT) rule Violations
+
+:   When specified treatment techniques required for a system's water source are not applied.
+
+Health-based violations
+
+:   Violations that are directly related to health risks in drinking water. Corresponds to all MCL, MRDL, and TT violations.
+
+Monitoring and reporting (MR) violations
+
+:   Failure to conduct drinking water quality tests or to submit the results of those tests in a timely fashion to USEPA or the primacy agency.
+
+Other Violations
+
+:   A USEPA catch-all category for other violations, which are generally either about conducting sanitary surveys of the system or about reporting their test results to the public or water systems they are interconnected with.
+
+Compliance
+
+:   Being in a state of not violating a relevant regulation
+
+Compliance period
+
+:   A period of time when a water system was in violation of a drinking water regulation
+
+There are a few considerations in constructing a binary violation indicator:
+
+1.  What types of violations count? MCL only? Health-based only? All?
+2.  What contaminants should count in the case of MCL violations? Those monitored under the Total Coliform Rule? Lead and Copper Rule? Nitrates? All?
+3.  How long does a violation need to last to be counted? 0 time? 1 month? 1 year?
+4.  Over what time period do they count? The past year? 2 years? 5 years? Forever?
+
+A brief review of the literature follows.
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| Description of metric                                                                                                                                                                                                                                                                                                                                                                                                          | Pros                                                                                                                                                                                          | Cons                                                                                                                   |
++================================================================================================================================================================================================================================================================================================================================================================================================================================+===============================================================================================================================================================================================+========================================================================================================================+
+| EPA "Enforcement Priority" (formerly "Serious Violator"), a threshold composed of points weighted towards TCR violations, other health-based violations, and repeated reporting violations over a rolling 5-year period. [See here](https://www.epa.gov/sites/default/files/documents/drinking_water_erp_2009.pdf). Does not count violations that are returned to compliance or are undergoing a verified enforcement action. | -   Already used by USEPA to prioritize enforcement efforts, legitimating use in CEJST                                                                                                        | -   May be considered stigmatizing by utility community                                                                |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Weighs violations on certain contaminants more highly based on relative risks to health                                                                                                   | -   Opaque, masks the difference between contaminant exposures and negligent monitoring or reporting                   |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Includes monitoring violations in a scaled manner, focusing on repeat violations.                                                                                                         | -   Includes non-health based violations that may not be desirable in a "access to safe water" oriented indicator      |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Cares about the speed of return to compliance, i.e. some measure of the temporal aspect of a health risk exposure                                                                         | -   Not including violations with enforcement actions may underestimate current health risks to the service population |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| All violations, over a multi-year period [@wallsten2008; @konisky2015; @marcillo2019]                                                                                                                                                                                                                                                                                                                                          | -   Simple to calculate                                                                                                                                                                       | -   Including monitoring violations may not be appropriate to a health/exposure-based metric                           |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                | -   Including monitoring violations captures governance and capacity problems that can undermine the ability of water systems to respond to the needs of their customers.                     |                                                                                                                        |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| TCR MCL violations only, on an annual basis [@allaire2018]                                                                                                                                                                                                                                                                                                                                                                     | -   There is some [evidence](https://nepis.epa.gov/Exe/ZyPURL.cgi?Dockey=P100529K.TXT) that TCR violations are the most systematically reported. Other violations may give a biased estimate. | -   Does not count the many documented cases of other kinds of violations                                              |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               | -   The "bias" evidence is from 2000 and may not be as relevant today                                                  |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| All MCL violations over a multi-year period [@dobbin2021; @switzer2017]                                                                                                                                                                                                                                                                                                                                                        | -   Intuitive appeal for considering all contaminants a potential health risk exposure                                                                                                        | -   MRDLs and treatment failures are also important health risk exposures                                              |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               |                                                                                                                        |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                |                                                                                                                                                                                               | -   Does not capture institutional risks associated with monitoring/ reporting violations                              |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+| All Health-Based Violations over a multi-year period [@dobbin2021; @switzer2017]                                                                                                                                                                                                                                                                                                                                               | -   Intuitive appeal for considering all health-based violations                                                                                                                              | -   Does not capture institutional risks associated with monitoring/ reporting violations                              |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------+
+
+## Proposed metric
+
+Binary indicator, which is if the system experienced more than 1 month in violation of any health-based standard in the past year. Discussion can modify the month and year periods.
