@@ -1,5 +1,5 @@
 ---
-title: "Federal WSB Case Study"
+title: "A Federal Use Case of the National Water Service Boundary Layer: Screening communities for drinking water finance for the Justice40 Initiative."
 author: "Kyle Onda"
 format: 
   html:
@@ -12,6 +12,7 @@ format:
     code-summary: "show the code"
     code-overflow: wrap
     code-tools: true
+    number-sections: true
     theme: 
       light: flatly
       dark: slate
@@ -85,13 +86,13 @@ bibliography: references.bib
 
 <!-- ``` -->
 
-# A Federal Use Case of the National Water Service Boundary Layer: Screening communities for drinking water finance for the Justice40 Initiative.
+## Introduction
 
-The purpose of this exercise is to quantify the extent to which adding a drinking water quality-based indicator to the Climate and Environmental Justice Screening Tool would change the universe of "communities" (2010 Census Tract geographies) that are highlighted. To do this, we need to construct a binary indicator that corresponds to some drinking-water related risk.
+The purpose of this exercise is to demonstrate the value of the [National Water Service Area Boundary layer](https://www.policyinnovation.org/blog/water-boundaries-data) with a Federal government use case. This use case is to quantify the extent to which adding a drinking water quality-based indicator to the Climate and Environmental Justice Screening Tool would change the universe of "communities" (2010 Census Tract geographies) that are highlighted. This document describes the how to construct a binary indicator that corresponds to some drinking-water related risk, implements the indicator
 
 ## Defining a drinking water environmental justice indicator
 
-TThe most common way to do this is to calculate an indicator variable based on drinking water violations data from the U.S. EPA SDWIS database. Here, I review and go over the pros and cons of the most common approaches in governance and the literature. First, some necessary terminology:
+The most common way to do this is to calculate an indicator variable based on drinking water violations data from the U.S. EPA SDWIS database. Here, I review and go over the pros and cons of the most common approaches in governance and the literature. First, some necessary terminology:
 
 ### Terminology
 
@@ -174,3 +175,41 @@ A brief review of the literature follows.
 ### Proposed metric
 
 Binary indicator, which is if the system experienced more than 1 month in health-based violation in the past two years. Discussion can modify the month and year periods. I believe giving a grace period for 1 month over two years leaves room for true fluke events for utilities that otherwise have good process control. I can also simply create the metric for a few combinations and we can see what seems reasonable.
+
+## Implementing the metric
+
+Below, we describe and implement the workflow in R.
+
+#### Collate health-based violations with compliance periods ending March 2020 or later from SDWIS
+
+#### Calculate the number of days in health-based violation by each CWS within this period
+
+#### Filter to CWS with greater than 30 such days
+
+#### Filter the TEMM national water service boundary layer to those states with comprehensive, non-county-based Tier 1 boundaries, plus Utah
+
+#### Filter the CEJST Census Tracts to the same states
+
+#### Match the violating CWS to the filtered boundary layer by PWSID
+
+#### Filter to the resulting set of CWS with violations
+
+#### Assign the indicator to CEJST Census Tracts that spatially intersect this set of CWS
+
+#### Calculate and compare summary statistics for the original set of CEJST tracts (in the filtered states) and the new set, by state, including:
+
+-   counts
+
+-   total population
+
+-   measures of income distribution
+
+-   race/ethnicity population distributions
+
+### Code
+
+Below, we implement the workflow in R.
+
+## Results 
+
+## Discussion
