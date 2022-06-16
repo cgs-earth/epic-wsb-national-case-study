@@ -417,11 +417,37 @@ j40_dw <- j40_dw %>%
 
 ### Calculate and compare summary statistics for the original set of CEJST tracts (in the filtered states) and the new set, by state, including:
 
--   counts
+counts
 
-    Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status
+Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status
 
-    ```{r}
+```{r}
+j40_dw <- j40_dw %>%
+  mutate(
+    CEJST_disadv = case_when(
+      SM_C == 1 ~ "CEJST disadvantaged",
+      TRUE ~ "Not CEJST disadvantaged"
+    ), 
+    CEJST_income_educ_threshold = case_when(
+      M_EBSI == 1 ~ "CEJST 'low' inc/edu",
+      TRUE ~ "CEJST 'high' inc/edu"
+    )
+  )
+  x <-  j40_dw %>% st_drop_geometry() %>% 
+  tabyl(DW_ut1,CEJST_disadv) %>% 
+  adorn_totals(where = c("row","col")) %>%
+  adorn_percentages("col") %>%
+  adorn_pct_formatting() %>%
+  adorn_ns() 
+  
+  kable(x)
+
+  
+```
+
+-   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State
+
+    ```{r, results='asis'}
     j40_dw <- j40_dw %>%
       mutate(
         CEJST_disadv = case_when(
@@ -433,53 +459,27 @@ j40_dw <- j40_dw %>%
           TRUE ~ "CEJST 'high' inc/edu"
         )
       )
-      x <-  j40_dw %>% st_drop_geometry() %>% 
-      tabyl(DW_ut1,CEJST_disadv) %>% 
-      adorn_totals(where = c("row","col")) %>%
-      adorn_percentages("col") %>%
-      adorn_pct_formatting() %>%
-      adorn_ns() 
-      
-      kable(x)
-
-      
-    ```
-
-    -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State
-
-        ```{r, results='asis'}
-        j40_dw <- j40_dw %>%
-          mutate(
-            CEJST_disadv = case_when(
-              SM_C == 1 ~ "CEJST disadvantaged",
-              TRUE ~ "Not CEJST disadvantaged"
-            ), 
-            CEJST_income_educ_threshold = case_when(
-              M_EBSI == 1 ~ "CEJST 'low' inc/edu",
-              TRUE ~ "CEJST 'high' inc/edu"
-            )
-          )
-        j40_dw %>% st_drop_geometry() %>% 
-          tabyl(DW_ut1,CEJST_disadv,SF) %>% 
-          adorn_totals(where = c("row","col")) %>%
-          adorn_percentages("col") %>%
-          adorn_pct_formatting() %>%
-          adorn_ns() %>%
-          walk2(names(.), ~ print(kable(.x, caption = .y)))
-        ```
-
-    -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator
-
-    ```{r, results='asis'}
-    x<-j40_dw %>% st_drop_geometry() %>% 
-      tabyl(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) %>% 
+    j40_dw %>% st_drop_geometry() %>% 
+      tabyl(DW_ut1,CEJST_disadv,SF) %>% 
       adorn_totals(where = c("row","col")) %>%
       adorn_percentages("col") %>%
       adorn_pct_formatting() %>%
       adorn_ns() %>%
       walk2(names(.), ~ print(kable(.x, caption = .y)))
-
     ```
+
+-   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator
+
+```{r, results='asis'}
+x<-j40_dw %>% st_drop_geometry() %>% 
+  tabyl(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) %>% 
+  adorn_totals(where = c("row","col")) %>%
+  adorn_percentages("col") %>%
+  adorn_pct_formatting() %>%
+  adorn_ns() %>%
+  walk2(names(.), ~ print(kable(.x, caption = .y)))
+
+```
 
 -   total population
 
@@ -490,3 +490,7 @@ j40_dw <- j40_dw %>%
 ## Discussion
 
 Will discuss results in detail here.
+
+### Headline 1: 
+
+959 "poor" tract/communities across the 11 states were identified to have safe drinking water violations, 67 of which were not previously identified as disadvantaged in the CEJST

@@ -171,7 +171,10 @@ div.csl-indent {
   <li><a href="#assign-the-indicator-to-cejst-census-tracts-that-spatially-intersect-this-set-of-cws" id="toc-assign-the-indicator-to-cejst-census-tracts-that-spatially-intersect-this-set-of-cws" class="nav-link" data-scroll-target="#assign-the-indicator-to-cejst-census-tracts-that-spatially-intersect-this-set-of-cws"> <span class="header-section-number">3.7</span> Assign the indicator to CEJST Census Tracts that spatially intersect this set of CWS</a></li>
   <li><a href="#calculate-and-compare-summary-statistics-for-the-original-set-of-cejst-tracts-in-the-filtered-states-and-the-new-set-by-state-including" id="toc-calculate-and-compare-summary-statistics-for-the-original-set-of-cejst-tracts-in-the-filtered-states-and-the-new-set-by-state-including" class="nav-link" data-scroll-target="#calculate-and-compare-summary-statistics-for-the-original-set-of-cejst-tracts-in-the-filtered-states-and-the-new-set-by-state-including"> <span class="header-section-number">3.8</span> Calculate and compare summary statistics for the original set of CEJST tracts (in the filtered states) and the new set, by state, including:</a></li>
   </ul></li>
-  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"> <span class="header-section-number">4</span> Discussion</a></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"> <span class="header-section-number">4</span> Discussion</a>
+  <ul class="collapse">
+  <li><a href="#headline-1" id="toc-headline-1" class="nav-link" data-scroll-target="#headline-1"> <span class="header-section-number">4.1</span> Headline 1:</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -619,8 +622,7 @@ chr (3): shapefile_column, column_name, column_description
 </section>
 <section id="calculate-and-compare-summary-statistics-for-the-original-set-of-cejst-tracts-in-the-filtered-states-and-the-new-set-by-state-including" class="level3" data-number="3.8">
 <h3 data-number="3.8" class="anchored" data-anchor-id="calculate-and-compare-summary-statistics-for-the-original-set-of-cejst-tracts-in-the-filtered-states-and-the-new-set-by-state-including"><span class="header-section-number">3.8</span> Calculate and compare summary statistics for the original set of CEJST tracts (in the filtered states) and the new set, by state, including:</h3>
-<ul>
-<li><p>counts</p>
+<p>counts</p>
 <p>Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status</p>
 <div class="cell">
 <details>
@@ -642,7 +644,7 @@ chr (3): shapefile_column, column_name, column_description
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_percentages</span>(<span class="st">"col"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_pct_formatting</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_ns</span>() </span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -1199,7 +1201,8 @@ chr (3): shapefile_column, column_name, column_description
 <td style="text-align: left;">100.0% (7905)</td>
 </tr>
 </tbody>
-</table></li>
+</table>
+<ul>
 <li><p>total population</p></li>
 <li><p>measures of income distribution</p></li>
 <li><p>race/ethnicity population distributions</p></li>
@@ -1209,9 +1212,13 @@ chr (3): shapefile_column, column_name, column_description
 <section id="discussion" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="discussion"><span class="header-section-number">4</span> Discussion</h2>
 <p>Will discuss results in detail here.</p>
+<section id="headline-1" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="headline-1"><span class="header-section-number">4.1</span> Headline 1:</h3>
+<p>959 “poor” tract/communities across the 11 states were identified to have safe drinking water violations, 67 of which were not previously identified as disadvantaged in the CEJST</p>
 <!-- -->
 
 
+</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
@@ -1907,11 +1914,39 @@ j40_dw &lt;- j40_dw %&gt;%
 
 ### Calculate and compare summary statistics for the original set of CEJST tracts (in the filtered states) and the new set, by state, including:
 
--   counts
+counts
 
-    Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status
+Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status
 
-    ```{r}
+quarto-executable-code-5450563D
+
+```r
+j40_dw &lt;- j40_dw %&gt;%
+  mutate(
+    CEJST_disadv = case_when(
+      SM_C == 1 ~ "CEJST disadvantaged",
+      TRUE ~ "Not CEJST disadvantaged"
+    ), 
+    CEJST_income_educ_threshold = case_when(
+      M_EBSI == 1 ~ "CEJST 'low' inc/edu",
+      TRUE ~ "CEJST 'high' inc/edu"
+    )
+  )
+  x &lt;-  j40_dw %&gt;% st_drop_geometry() %&gt;% 
+  tabyl(DW_ut1,CEJST_disadv) %&gt;% 
+  adorn_totals(where = c("row","col")) %&gt;%
+  adorn_percentages("col") %&gt;%
+  adorn_pct_formatting() %&gt;%
+  adorn_ns() 
+  
+  kable(x)
+
+  
+```
+
+-   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State
+
+    ```{r, results='asis'}
     j40_dw &lt;- j40_dw %&gt;%
       mutate(
         CEJST_disadv = case_when(
@@ -1923,53 +1958,27 @@ j40_dw &lt;- j40_dw %&gt;%
           TRUE ~ "CEJST 'high' inc/edu"
         )
       )
-      x &lt;-  j40_dw %&gt;% st_drop_geometry() %&gt;% 
-      tabyl(DW_ut1,CEJST_disadv) %&gt;% 
-      adorn_totals(where = c("row","col")) %&gt;%
-      adorn_percentages("col") %&gt;%
-      adorn_pct_formatting() %&gt;%
-      adorn_ns() 
-      
-      kable(x)
-
-      
-    ```
-
-    -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State
-
-        ```{r, results='asis'}
-        j40_dw &lt;- j40_dw %&gt;%
-          mutate(
-            CEJST_disadv = case_when(
-              SM_C == 1 ~ "CEJST disadvantaged",
-              TRUE ~ "Not CEJST disadvantaged"
-            ), 
-            CEJST_income_educ_threshold = case_when(
-              M_EBSI == 1 ~ "CEJST 'low' inc/edu",
-              TRUE ~ "CEJST 'high' inc/edu"
-            )
-          )
-        j40_dw %&gt;% st_drop_geometry() %&gt;% 
-          tabyl(DW_ut1,CEJST_disadv,SF) %&gt;% 
-          adorn_totals(where = c("row","col")) %&gt;%
-          adorn_percentages("col") %&gt;%
-          adorn_pct_formatting() %&gt;%
-          adorn_ns() %&gt;%
-          walk2(names(.), ~ print(kable(.x, caption = .y)))
-        ```
-
-    -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator
-
-    ```{r, results='asis'}
-    x&lt;-j40_dw %&gt;% st_drop_geometry() %&gt;% 
-      tabyl(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) %&gt;% 
+    j40_dw %&gt;% st_drop_geometry() %&gt;% 
+      tabyl(DW_ut1,CEJST_disadv,SF) %&gt;% 
       adorn_totals(where = c("row","col")) %&gt;%
       adorn_percentages("col") %&gt;%
       adorn_pct_formatting() %&gt;%
       adorn_ns() %&gt;%
       walk2(names(.), ~ print(kable(.x, caption = .y)))
-
     ```
+
+-   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator
+
+```{r, results='asis'}
+x&lt;-j40_dw %&gt;% st_drop_geometry() %&gt;% 
+  tabyl(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) %&gt;% 
+  adorn_totals(where = c("row","col")) %&gt;%
+  adorn_percentages("col") %&gt;%
+  adorn_pct_formatting() %&gt;%
+  adorn_ns() %&gt;%
+  walk2(names(.), ~ print(kable(.x, caption = .y)))
+
+```
 
 -   total population
 
@@ -1979,7 +1988,11 @@ j40_dw &lt;- j40_dw %&gt;%
 
 ## Discussion
 
-Will discuss results in detail here.</code></pre>
+Will discuss results in detail here.
+
+### Headline 1: 
+
+959 "poor" tract/communities across the 11 states were identified to have safe drinking water violations, 67 of which were not previously identified as disadvantaged in the CEJST</code></pre>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
