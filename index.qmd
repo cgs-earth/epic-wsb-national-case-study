@@ -1,8 +1,11 @@
 ---
 title: "A Federal Use Case of the National Water Service Boundary Layer: Screening communities for drinking water finance for the Justice40 Initiative."
-author: "Kyle Onda"
+author: 
+  - Kyle Onda, Center for Geospatial Solutions
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 format: 
   html:
+    title-block-banner: true
     toc: true
     toc-location: left
     toc-depth: 3
@@ -14,8 +17,8 @@ format:
     code-tools: true
     number-sections: true
     theme: 
-      light: flatly
       dark: slate
+      light: flatly
 editor: visual
 bibliography: references.bib
 ---
@@ -178,27 +181,305 @@ Binary indicator, which is if the system experienced more than 1 month in health
 
 ## Implementing the metric
 
+First, we load required packages
+
+```{r}
+#| output: false
+library(tidyverse)
+library(sf)
+library(mapview)
+library(vroom)
+library(qs)
+library(janitor)
+library(knitr)
+
+sf_use_s2(FALSE)
+```
+
 Below, we describe and implement the workflow in R.
 
-#### Collate health-based violations with compliance periods ending March 2020 or later from SDWIS
+### Collate health-based violations with compliance periods ending March 2020 or later from SDWIS
 
-#### Calculate the number of days in health-based violation by each CWS within this period
+First, we retrieve the .zip archive of the SDWIS data download from USEPA, and unzip the violations data table.
 
-#### Filter to CWS with greater than 30 such days
+```{r}
+#| eval: false
+download.file(url = "https://echo.epa.gov/files/echodownloads/SDWA_latest_downloads.zip", destfile = "../data/sdwa.zip")
+unzip("data/sdwa.zip", 
+      files = "SDWA_VIOLATIONS_ENFORCEMENT.csv",
+      exdir = "data")
+```
 
-#### Filter the TEMM national water service boundary layer to those states with comprehensive, non-county-based Tier 1 boundaries, plus Utah
+This archive has several tables, the relevant one being `SDWA_VIOLATIONS_ENFORCEMENT.csv`, which as of this version of the workflow, was last updated on April 13, 2022.
 
-#### Filter the CEJST Census Tracts to the same states
+```{r}
+unzip("data/sdwa.zip", list = TRUE)
+end_date <- as.Date(unzip("data/sdwa.zip", list = TRUE)$Date[11])
+```
 
-#### Match the violating CWS to the filtered boundary layer by PWSID
+We load the violations table and filter to violations that end later than April 13, 2020, two years before the the most current data was released.
 
-#### Filter to the resulting set of CWS with violations
+```{r}
+start_date <- end_date - 365*2
+violators <- vroom("data/SDWA_VIOLATIONS_ENFORCEMENT.csv", # read data
+                    col_types = cols(.default = "c")) %>%
+  filter(IS_HEALTH_BASED_IND == "Y") %>% # select only health-based violations
+  mutate( #format dates as dates
+    start = as.Date(COMPL_PER_BEGIN_DATE, 
+                                   format = "%m/%d/%Y"),
+    end = pmin(as.Date(CALCULATED_RTC_DATE,
+                                 format = "%m/%d/%Y"),
+                              end_date)) # set end date to most current report date
 
-#### Assign the indicator to CEJST Census Tracts that spatially intersect this set of CWS
 
-#### Calculate and compare summary statistics for the original set of CEJST tracts (in the filtered states) and the new set, by state, including:
+  
+  
+```
+
+### Calculate the number of days in health-based violation by each CWS within this period
+
+```{r}
+violators <- violators %>%
+  mutate(
+    violation_duration = end - start
+  ) 
+  
+```
+
+### Filter to CWS with greater than 30 such days
+
+```{r}
+violators <- violators %>%
+  filter(end >= start_date) %>%
+  filter(violation_duration >= 30) %>%
+  distinct(PWSID)
+```
+
+### Filter the TEMM national water service boundary layer to those states with comprehensive, non-county-based Tier 1 boundaries, plus Utah
+
+First we download and compress the TEMM layer for quick access in later parts of the workflow
+
+```{r}
+#| eval= FALSE
+download.file(url = "https://www.hydroshare.org/django_irods/rest_download/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson/?url_download=True&zipped=False&aggregation=False", destfile = "data/temm.geojson")
+
+temm <- sf::read_sf("data/temm.geojson")
+qsave(temm, file = "data/temm.qs")
+
+```
+
+Now we load the file, and filter for only the states with comprehensive Tier 1 availability (AZ, CA, CT, KS, NJ, NM, OK, PA, TX, WA) as well as Utah for comparison. We also load in Utah's data for Culinwary Water Service Areas, filtering for Community Water Systems, which was not included in the original TEMM layer but has been created by Utah DWR, to compare performance between TEMM estimation methods and Tier 1 if possible.
+
+```{r}
+temm <- qread("data/temm.qs")
+states <- c("AZ",
+            "CA",
+            "CT",
+            "KS",
+            "NJ",
+            "NM",
+            "OK",
+            "PA",
+            "TX",
+            "UT",
+            "WA")
+
+
+utah <- sf::read_sf("https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/CulinaryWaterServiceAreas/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&returnCentroid=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=4326&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pgeojson") %>% filter(SYSTEMTYPE == "C")
+
+
+boundaries <- temm %>% filter(
+  state_code %in% states
+) %>% select(-service_area_type_code)
+```
+
+### Filter the CEJST Census Tracts to the same states
+
+First we download and unzip the data
+
+```{r}
+#| eval= FALSE
+download.file(url = "https://static-data-screeningtool.geoplatform.gov/data-pipeline/data/score/shapefile/usa.zip", destfile = "data/j40.zip")
+unzip("data/j40.zip", exdir = "data/j40")
+
+```
+
+Then we load it and the data dictionary
+
+```{r}
+j40 <- sf::read_sf("data/j40/usa.shp")
+j40_dict <- vroom("data/j40/columns.csv")
+```
+
+### Filter to the resulting set of CWS with violations
+
+```{r}
+v <- boundaries %>% 
+  filter(pwsid %in% violators$PWSID)
+```
+
+### Assign the indicator to CEJST Census Tracts that spatially intersect this set of CWS
+
+First we spatially intersect the set of CWS boundaries with the threshold period of health-based violations to the CEJST version of the 2010 U.S. Census Tracts. We also do Utah separately. Caveats:
+
+-   I am not setting a threshold for how large an overlap between a census tract and a utility needs to be. A census tract may have only a small portion covered by a utility and we are counting it. There are two scenarios:
+
+    -   A relatively large system only serves part of a tract on its periphery
+
+    -   A small system with a tier 1 boundary like a mobile home park or golf course community lies completely within a tract much larger than it
+
+    -   I have not quantified this yet
+
+```{r}
+#| eval= FALSE
+states2 <- c("Arizona",
+            "California",
+            "Connecticut",
+            "Kansas",
+            "New Jersey",
+            "New Mexico",
+            "Oklahoma",
+            "Pennsylvania",
+            "Texas",
+            "Utah",
+            "Washington")
+
+
+j40 <- j40 %>% filter(
+  SF %in% states2
+)
+
+v1 <- v %>% filter(state_code == states[1])
+j1 <- j40 %>% filter(SF == states2[1])
+
+v_j40 <- st_intersection(v1,j1)
+
+for (i in 2:length(states)){
+  v1 <- v %>% filter(state_code == states[i])
+  j1 <- j40 %>% filter(SF == states2[i])
+  v_j40_1 <- st_intersection(v1,j1)
+  v_j40 <- bind_rows(v_j40,v_j40_1)
+  print(paste0(i))
+}
+
+
+v_utah <- utah %>% filter(DWSYSNUM %in% v$pwsid)
+j_utah <- j40 %>% filter(SF == "Utah")
+
+v_j40_utah <- st_intersection(v_utah,j_utah)
+
+qsave(v_j40,"data/viol_pws_j40.qs")
+qsave(v_j40_utah, "data/viol_pws_j40_utah.qs")
+```
+
+Then, we need to construct indicator as framed by CEJST, meaning we assign to each Census tract a binary indicator as to whether it intersects a violating water system as well as meeting the socioeconomic threshold set by the CEJST (\>65th percentile for percentage of population living on incomes \<200% of the Federal Poverty line and with 80% or more of adults \>15 not enrolled in higher education). We also only allow for Tier 1 and Tier 2a matches, removing all Tier 2b and Tier 3 matches.
+
+```{r}
+states2 <- c("Arizona",
+            "California",
+            "Connecticut",
+            "Kansas",
+            "New Jersey",
+            "New Mexico",
+            "Oklahoma",
+            "Pennsylvania",
+            "Texas",
+            "Utah",
+            "Washington")
+
+
+j40 <- j40 %>% filter(
+  SF %in% states2
+)
+
+v_j40_utah <- qread("data/viol_pws_j40_utah.qs") 
+v_j40 <- qread("data/viol_pws_j40.qs") %>% filter(tier == "Tier 1" | tier == "Tier 2a")
+
+v_j40 <- v_j40 %>% filter(SF != "Utah")
+
+j40_dw <- j40 %>% 
+  mutate(
+   DW = case_when(GEOID10 %in% v_j40$GEOID10 ~ "SDWA Violation Present",
+                       TRUE ~ "SDWA Violation Not Present"), # DW indicator with Tier 2 Utah 
+   DW_ut1 = case_when( ((GEOID10 %in% v_j40$GEOID10 & SF != "Utah") | (GEOID10 %in% v_j40_utah$GEOID10)) ~ "SDWA Violation Present",
+                       TRUE ~ "SDWA Violation Not Present") # DW indicator with Tier 1 Utah
+  )
+
+j40_dw <- j40_dw %>%
+  mutate(
+    dw_disadv = (DW == 1 & M_EBSI == 1),
+    dw_disadv_ut1 = (DW_ut1 ==1 & M_EBSI == 1)
+  )
+    
+
+  
+```
+
+### Calculate and compare summary statistics for the original set of CEJST tracts (in the filtered states) and the new set, by state, including:
 
 -   counts
+
+    Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status
+
+    ```{r}
+    j40_dw <- j40_dw %>%
+      mutate(
+        CEJST_disadv = case_when(
+          SM_C == 1 ~ "CEJST disadvantaged",
+          TRUE ~ "Not CEJST disadvantaged"
+        ), 
+        CEJST_income_educ_threshold = case_when(
+          M_EBSI == 1 ~ "CEJST 'low' inc/edu",
+          TRUE ~ "CEJST 'high' inc/edu"
+        )
+      )
+      x <-  j40_dw %>% st_drop_geometry() %>% 
+      tabyl(DW_ut1,CEJST_disadv) %>% 
+      adorn_totals(where = c("row","col")) %>%
+      adorn_percentages("col") %>%
+      adorn_pct_formatting() %>%
+      adorn_ns() 
+      
+      kable(x)
+
+      
+    ```
+
+    -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State
+
+        ```{r, results='asis'}
+        j40_dw <- j40_dw %>%
+          mutate(
+            CEJST_disadv = case_when(
+              SM_C == 1 ~ "CEJST disadvantaged",
+              TRUE ~ "Not CEJST disadvantaged"
+            ), 
+            CEJST_income_educ_threshold = case_when(
+              M_EBSI == 1 ~ "CEJST 'low' inc/edu",
+              TRUE ~ "CEJST 'high' inc/edu"
+            )
+          )
+        j40_dw %>% st_drop_geometry() %>% 
+          tabyl(DW_ut1,CEJST_disadv,SF) %>% 
+          adorn_totals(where = c("row","col")) %>%
+          adorn_percentages("col") %>%
+          adorn_pct_formatting() %>%
+          adorn_ns() %>%
+          walk2(names(.), ~ print(kable(.x, caption = .y)))
+        ```
+
+    -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator
+
+    ```{r, results='asis'}
+    x<-j40_dw %>% st_drop_geometry() %>% 
+      tabyl(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) %>% 
+      adorn_totals(where = c("row","col")) %>%
+      adorn_percentages("col") %>%
+      adorn_pct_formatting() %>%
+      adorn_ns() %>%
+      walk2(names(.), ~ print(kable(.x, caption = .y)))
+
+    ```
 
 -   total population
 
@@ -206,10 +487,6 @@ Below, we describe and implement the workflow in R.
 
 -   race/ethnicity population distributions
 
-### Code
-
-Below, we implement the workflow in R.
-
-## Results 
-
 ## Discussion
+
+Will discuss results in detail here.
