@@ -213,6 +213,7 @@ unzip("data/sdwa.zip",
 This archive has several tables, the relevant one being `SDWA_VIOLATIONS_ENFORCEMENT.csv`, which as of this version of the workflow, was last updated on April 13, 2022.
 
 ```{r}
+#| eval: false
 unzip("data/sdwa.zip", list = TRUE)
 end_date <- as.Date(unzip("data/sdwa.zip", list = TRUE)$Date[11])
 ```
@@ -220,6 +221,7 @@ end_date <- as.Date(unzip("data/sdwa.zip", list = TRUE)$Date[11])
 We load the violations table and filter to violations that end later than April 13, 2020, two years before the the most current data was released.
 
 ```{r}
+#| eval: false
 start_date <- end_date - 365*2
 violators <- vroom("data/SDWA_VIOLATIONS_ENFORCEMENT.csv", # read data
                     col_types = cols(.default = "c")) %>%
@@ -239,6 +241,7 @@ violators <- vroom("data/SDWA_VIOLATIONS_ENFORCEMENT.csv", # read data
 ### Calculate the number of days in health-based violation by each CWS within this period
 
 ```{r}
+#| eval: false
 violators <- violators %>%
   mutate(
     violation_duration = end - start
@@ -249,6 +252,7 @@ violators <- violators %>%
 ### Filter to CWS with greater than 30 such days
 
 ```{r}
+#| eval: false
 violators <- violators %>%
   filter(end >= start_date) %>%
   filter(violation_duration >= 30) %>%
@@ -260,7 +264,7 @@ violators <- violators %>%
 First we download and compress the TEMM layer for quick access in later parts of the workflow
 
 ```{r}
-#| eval= FALSE
+#| eval: false
 download.file(url = "https://www.hydroshare.org/django_irods/rest_download/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson/?url_download=True&zipped=False&aggregation=False", destfile = "data/temm.geojson")
 
 temm <- sf::read_sf("data/temm.geojson")
@@ -271,6 +275,7 @@ qsave(temm, file = "data/temm.qs")
 Now we load the file, and filter for only the states with comprehensive Tier 1 availability (AZ, CA, CT, KS, NJ, NM, OK, PA, TX, WA) as well as Utah for comparison. We also load in Utah's data for Culinwary Water Service Areas, filtering for Community Water Systems, which was not included in the original TEMM layer but has been created by Utah DWR, to compare performance between TEMM estimation methods and Tier 1 if possible.
 
 ```{r}
+#| eval: false
 temm <- qread("data/temm.qs")
 states <- c("AZ",
             "CA",
@@ -298,7 +303,7 @@ boundaries <- temm %>% filter(
 First we download and unzip the data
 
 ```{r}
-#| eval= FALSE
+#| eval: false
 download.file(url = "https://static-data-screeningtool.geoplatform.gov/data-pipeline/data/score/shapefile/usa.zip", destfile = "data/j40.zip")
 unzip("data/j40.zip", exdir = "data/j40")
 
@@ -307,6 +312,7 @@ unzip("data/j40.zip", exdir = "data/j40")
 Then we load it and the data dictionary
 
 ```{r}
+#| eval: false
 j40 <- sf::read_sf("data/j40/usa.shp")
 j40_dict <- vroom("data/j40/columns.csv")
 ```
@@ -314,6 +320,7 @@ j40_dict <- vroom("data/j40/columns.csv")
 ### Filter to the resulting set of CWS with violations
 
 ```{r}
+#| eval: false
 v <- boundaries %>% 
   filter(pwsid %in% violators$PWSID)
 ```
@@ -331,7 +338,7 @@ First we spatially intersect the set of CWS boundaries with the threshold period
     -   I have not quantified this yet
 
 ```{r}
-#| eval= FALSE
+#| eval: false
 states2 <- c("Arizona",
             "California",
             "Connecticut",
@@ -375,6 +382,7 @@ qsave(v_j40_utah, "data/viol_pws_j40_utah.qs")
 Then, we need to construct indicator as framed by CEJST, meaning we assign to each Census tract a binary indicator as to whether it intersects a violating water system as well as meeting the socioeconomic threshold set by the CEJST (\>65th percentile for percentage of population living on incomes \<200% of the Federal Poverty line and with 80% or more of adults \>15 not enrolled in higher education). We also only allow for Tier 1 and Tier 2a matches, removing all Tier 2b and Tier 3 matches.
 
 ```{r}
+#| eval: false
 states2 <- c("Arizona",
             "California",
             "Connecticut",
@@ -422,6 +430,7 @@ counts
 Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status
 
 ```{r}
+#| eval: false
 j40_dw <- j40_dw %>%
   mutate(
     CEJST_disadv = case_when(
@@ -448,6 +457,7 @@ j40_dw <- j40_dw %>%
 -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State
 
     ```{r, results='asis'}
+#| eval: false
     j40_dw <- j40_dw %>%
       mutate(
         CEJST_disadv = case_when(
@@ -471,6 +481,7 @@ j40_dw <- j40_dw %>%
 -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator
 
 ```{r, results='asis'}
+#| eval: false
 x<-j40_dw %>% st_drop_geometry() %>% 
   tabyl(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) %>% 
   adorn_totals(where = c("row","col")) %>%
@@ -481,9 +492,10 @@ x<-j40_dw %>% st_drop_geometry() %>%
 
 ```
 
--   total population
+-   total population (see [map](https://cgs-earth.github.io/epic-wsb-national-case-study/map.html))
 
 ```{r}
+#| eval: false
 pop_by_tract_type <- j40_dw %>% 
   ungroup() %>%
   group_by(CEJST_disadv,dw_disadv_ut1) %>% 
@@ -511,6 +523,7 @@ kable(table)
 -   measures of income distribution
 
 ```{r}
+#| eval: false
 library(tidycensus)
 census_api_key("b25f8b1b7bf10561c9cbc3a20a4d2572677f1f05")
 options(tigris_use_cache = TRUE)

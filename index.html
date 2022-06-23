@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Kyle Onda, Center for Geospatial Solutions">
-<meta name="dcterms.date" content="2022-06-16">
+<meta name="dcterms.date" content="2022-06-23">
 
 <title>A Federal Use Case of the National Water Service Boundary Layer: Screening communities for drinking water finance for the Justice40 Initiative.</title>
 <style>
@@ -140,7 +140,7 @@ div.csl-indent {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 16, 2022</p>
+        <p class="date">June 23, 2022</p>
       </div>
     </div>
       
@@ -385,41 +385,24 @@ div.csl-indent {
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"data/sdwa.zip"</span>, <span class="at">list =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>                              Name     Length                Date
-1       SDWA_EVENTS_MILESTONES.csv   36426509 2022-04-13 15:11:00
-2              SDWA_FACILITIES.csv  156229271 2022-04-13 15:13:00
-3        SDWA_GEOGRAPHIC_AREAS.csv   40040738 2022-04-13 15:13:00
-4             SDWA_LCR_SAMPLES.csv  104175670 2022-04-13 15:13:00
-5       SDWA_PUB_WATER_SYSTEMS.csv  126596558 2022-04-13 15:14:00
-6      SDWA_PN_VIOLATION_ASSOC.csv   31721515 2022-04-13 15:14:00
-7          SDWA_REF_ANSI_AREAS.csv      86159 2022-04-13 15:14:00
-8         SDWA_REF_CODE_VALUES.csv     117171 2022-04-13 15:14:00
-9           SDWA_SERVICE_AREAS.csv   18901420 2022-04-13 15:15:00
-10            SDWA_SITE_VISITS.csv  336423869 2022-04-13 15:17:00
-11 SDWA_VIOLATIONS_ENFORCEMENT.csv 3208856416 2022-04-13 15:41:00</code></pre>
-</div>
-<details>
-<summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">unzip</span>(<span class="st">"data/sdwa.zip"</span>, <span class="at">list =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>Date[<span class="dv">11</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"data/sdwa.zip"</span>, <span class="at">list =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">unzip</span>(<span class="st">"data/sdwa.zip"</span>, <span class="at">list =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>Date[<span class="dv">11</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We load the violations table and filter to violations that end later than April 13, 2020, two years before the the most current data was released.</p>
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> end_date <span class="sc">-</span> <span class="dv">365</span><span class="sc">*</span><span class="dv">2</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>violators <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="st">"data/SDWA_VIOLATIONS_ENFORCEMENT.csv"</span>, <span class="co"># read data</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="st">"c"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(IS_HEALTH_BASED_IND <span class="sc">==</span> <span class="st">"Y"</span>) <span class="sc">%&gt;%</span> <span class="co"># select only health-based violations</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>( <span class="co">#format dates as dates</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">as.Date</span>(COMPL_PER_BEGIN_DATE, </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">format =</span> <span class="st">"%m/%d/%Y"</span>),</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">end =</span> <span class="fu">pmin</span>(<span class="fu">as.Date</span>(CALCULATED_RTC_DATE,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">format =</span> <span class="st">"%m/%d/%Y"</span>),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                              end_date)) <span class="co"># set end date to most current report date</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> end_date <span class="sc">-</span> <span class="dv">365</span><span class="sc">*</span><span class="dv">2</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>violators <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="st">"data/SDWA_VIOLATIONS_ENFORCEMENT.csv"</span>, <span class="co"># read data</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="st">"c"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(IS_HEALTH_BASED_IND <span class="sc">==</span> <span class="st">"Y"</span>) <span class="sc">%&gt;%</span> <span class="co"># select only health-based violations</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>( <span class="co">#format dates as dates</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">as.Date</span>(COMPL_PER_BEGIN_DATE, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">format =</span> <span class="st">"%m/%d/%Y"</span>),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">end =</span> <span class="fu">pmin</span>(<span class="fu">as.Date</span>(CALCULATED_RTC_DATE,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">format =</span> <span class="st">"%m/%d/%Y"</span>),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                              end_date)) <span class="co"># set end date to most current report date</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -428,10 +411,10 @@ div.csl-indent {
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>violators <span class="ot">&lt;-</span> violators <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">violation_duration =</span> end <span class="sc">-</span> start</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>violators <span class="ot">&lt;-</span> violators <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">violation_duration =</span> end <span class="sc">-</span> start</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -440,10 +423,10 @@ div.csl-indent {
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>violators <span class="ot">&lt;-</span> violators <span class="sc">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(end <span class="sc">&gt;=</span> start_date) <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_duration <span class="sc">&gt;=</span> <span class="dv">30</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(PWSID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>violators <span class="ot">&lt;-</span> violators <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(end <span class="sc">&gt;=</span> start_date) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_duration <span class="sc">&gt;=</span> <span class="dv">30</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(PWSID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -453,36 +436,36 @@ div.csl-indent {
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">"https://www.hydroshare.org/django_irods/rest_download/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson/?url_download=True&amp;zipped=False&amp;aggregation=False"</span>, <span class="at">destfile =</span> <span class="st">"data/temm.geojson"</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>temm <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"data/temm.geojson"</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(temm, <span class="at">file =</span> <span class="st">"data/temm.qs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">"https://www.hydroshare.org/django_irods/rest_download/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson/?url_download=True&amp;zipped=False&amp;aggregation=False"</span>, <span class="at">destfile =</span> <span class="st">"data/temm.geojson"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>temm <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"data/temm.geojson"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(temm, <span class="at">file =</span> <span class="st">"data/temm.qs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Now we load the file, and filter for only the states with comprehensive Tier 1 availability (AZ, CA, CT, KS, NJ, NM, OK, PA, TX, WA) as well as Utah for comparison. We also load in Utah’s data for Culinwary Water Service Areas, filtering for Community Water Systems, which was not included in the original TEMM layer but has been created by Utah DWR, to compare performance between TEMM estimation methods and Tier 1 if possible.</p>
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>temm <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"data/temm.qs"</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"AZ"</span>,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"CA"</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"CT"</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"KS"</span>,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"NJ"</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"NM"</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"OK"</span>,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"PA"</span>,</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"TX"</span>,</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"UT"</span>,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">"WA"</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>utah <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/CulinaryWaterServiceAreas/FeatureServer/0/query?where=1%3D1&amp;objectIds=&amp;time=&amp;geometry=&amp;geometryType=esriGeometryEnvelope&amp;inSR=&amp;spatialRel=esriSpatialRelIntersects&amp;resultType=none&amp;distance=0.0&amp;units=esriSRUnit_Meter&amp;returnGeodetic=false&amp;outFields=*&amp;returnGeometry=true&amp;returnCentroid=false&amp;featureEncoding=esriDefault&amp;multipatchOption=xyFootprint&amp;maxAllowableOffset=&amp;geometryPrecision=&amp;outSR=4326&amp;defaultSR=&amp;datumTransformation=&amp;applyVCSProjection=false&amp;returnIdsOnly=false&amp;returnUniqueIdsOnly=false&amp;returnCountOnly=false&amp;returnExtentOnly=false&amp;returnQueryGeometry=false&amp;returnDistinctValues=false&amp;cacheHint=false&amp;orderByFields=&amp;groupByFieldsForStatistics=&amp;outStatistics=&amp;having=&amp;resultOffset=&amp;resultRecordCount=&amp;returnZ=false&amp;returnM=false&amp;returnExceededLimitFeatures=true&amp;quantizationParameters=&amp;sqlFormat=none&amp;f=pgeojson"</span>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SYSTEMTYPE <span class="sc">==</span> <span class="st">"C"</span>)</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>boundaries <span class="ot">&lt;-</span> temm <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  state_code <span class="sc">%in%</span> states</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>service_area_type_code)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>temm <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"data/temm.qs"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"AZ"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"CA"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"CT"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"KS"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"NJ"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"NM"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"OK"</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"PA"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"TX"</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"UT"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">"WA"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>utah <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"https://services.arcgis.com/ZzrwjTRez6FJiOq4/arcgis/rest/services/CulinaryWaterServiceAreas/FeatureServer/0/query?where=1%3D1&amp;objectIds=&amp;time=&amp;geometry=&amp;geometryType=esriGeometryEnvelope&amp;inSR=&amp;spatialRel=esriSpatialRelIntersects&amp;resultType=none&amp;distance=0.0&amp;units=esriSRUnit_Meter&amp;returnGeodetic=false&amp;outFields=*&amp;returnGeometry=true&amp;returnCentroid=false&amp;featureEncoding=esriDefault&amp;multipatchOption=xyFootprint&amp;maxAllowableOffset=&amp;geometryPrecision=&amp;outSR=4326&amp;defaultSR=&amp;datumTransformation=&amp;applyVCSProjection=false&amp;returnIdsOnly=false&amp;returnUniqueIdsOnly=false&amp;returnCountOnly=false&amp;returnExtentOnly=false&amp;returnQueryGeometry=false&amp;returnDistinctValues=false&amp;cacheHint=false&amp;orderByFields=&amp;groupByFieldsForStatistics=&amp;outStatistics=&amp;having=&amp;resultOffset=&amp;resultRecordCount=&amp;returnZ=false&amp;returnM=false&amp;returnExceededLimitFeatures=true&amp;quantizationParameters=&amp;sqlFormat=none&amp;f=pgeojson"</span>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SYSTEMTYPE <span class="sc">==</span> <span class="st">"C"</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>boundaries <span class="ot">&lt;-</span> temm <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  state_code <span class="sc">%in%</span> states</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>service_area_type_code)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -492,26 +475,17 @@ div.csl-indent {
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">"https://static-data-screeningtool.geoplatform.gov/data-pipeline/data/score/shapefile/usa.zip"</span>, <span class="at">destfile =</span> <span class="st">"data/j40.zip"</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"data/j40.zip"</span>, <span class="at">exdir =</span> <span class="st">"data/j40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> <span class="st">"https://static-data-screeningtool.geoplatform.gov/data-pipeline/data/score/shapefile/usa.zip"</span>, <span class="at">destfile =</span> <span class="st">"data/j40.zip"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">"data/j40.zip"</span>, <span class="at">exdir =</span> <span class="st">"data/j40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Then we load it and the data dictionary</p>
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>j40 <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"data/j40/usa.shp"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>j40_dict <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="st">"data/j40/columns.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>j40 <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">"data/j40/usa.shp"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>j40_dict <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="st">"data/j40/columns.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 110 Columns: 3
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (3): shapefile_column, column_name, column_description
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
 </div>
 </section>
 <section id="filter-to-the-resulting-set-of-cws-with-violations" class="level3" data-number="3.6">
@@ -519,8 +493,8 @@ chr (3): shapefile_column, column_name, column_description
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> boundaries <span class="sc">%&gt;%</span> </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pwsid <span class="sc">%in%</span> violators<span class="sc">$</span>PWSID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> boundaries <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pwsid <span class="sc">%in%</span> violators<span class="sc">$</span>PWSID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -538,85 +512,85 @@ chr (3): shapefile_column, column_name, column_description
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>states2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Arizona"</span>,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">"California"</span>,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Connecticut"</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Kansas"</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Jersey"</span>,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Mexico"</span>,</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Oklahoma"</span>,</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Pennsylvania"</span>,</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Texas"</span>,</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Utah"</span>,</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Washington"</span>)</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>j40 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  SF <span class="sc">%in%</span> states2</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>v1 <span class="ot">&lt;-</span> v <span class="sc">%&gt;%</span> <span class="fu">filter</span>(state_code <span class="sc">==</span> states[<span class="dv">1</span>])</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>j1 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">==</span> states2[<span class="dv">1</span>])</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>v_j40 <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(v1,j1)</span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(states)){</span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  v1 <span class="ot">&lt;-</span> v <span class="sc">%&gt;%</span> <span class="fu">filter</span>(state_code <span class="sc">==</span> states[i])</span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>  j1 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">==</span> states2[i])</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>  v_j40_1 <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(v1,j1)</span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>  v_j40 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(v_j40,v_j40_1)</span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste0</span>(i))</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>v_utah <span class="ot">&lt;-</span> utah <span class="sc">%&gt;%</span> <span class="fu">filter</span>(DWSYSNUM <span class="sc">%in%</span> v<span class="sc">$</span>pwsid)</span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>j_utah <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">==</span> <span class="st">"Utah"</span>)</span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>v_j40_utah <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(v_utah,j_utah)</span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(v_j40,<span class="st">"data/viol_pws_j40.qs"</span>)</span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(v_j40_utah, <span class="st">"data/viol_pws_j40_utah.qs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>states2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Arizona"</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">"California"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Connecticut"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Kansas"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Jersey"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Mexico"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Oklahoma"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Pennsylvania"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Texas"</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Utah"</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Washington"</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>j40 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  SF <span class="sc">%in%</span> states2</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>v1 <span class="ot">&lt;-</span> v <span class="sc">%&gt;%</span> <span class="fu">filter</span>(state_code <span class="sc">==</span> states[<span class="dv">1</span>])</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>j1 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">==</span> states2[<span class="dv">1</span>])</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>v_j40 <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(v1,j1)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(states)){</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  v1 <span class="ot">&lt;-</span> v <span class="sc">%&gt;%</span> <span class="fu">filter</span>(state_code <span class="sc">==</span> states[i])</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  j1 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">==</span> states2[i])</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  v_j40_1 <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(v1,j1)</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  v_j40 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(v_j40,v_j40_1)</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste0</span>(i))</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>v_utah <span class="ot">&lt;-</span> utah <span class="sc">%&gt;%</span> <span class="fu">filter</span>(DWSYSNUM <span class="sc">%in%</span> v<span class="sc">$</span>pwsid)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>j_utah <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">==</span> <span class="st">"Utah"</span>)</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>v_j40_utah <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(v_utah,j_utah)</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(v_j40,<span class="st">"data/viol_pws_j40.qs"</span>)</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="fu">qsave</span>(v_j40_utah, <span class="st">"data/viol_pws_j40_utah.qs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Then, we need to construct indicator as framed by CEJST, meaning we assign to each Census tract a binary indicator as to whether it intersects a violating water system as well as meeting the socioeconomic threshold set by the CEJST (&gt;65th percentile for percentage of population living on incomes &lt;200% of the Federal Poverty line and with 80% or more of adults &gt;15 not enrolled in higher education). We also only allow for Tier 1 and Tier 2a matches, removing all Tier 2b and Tier 3 matches.</p>
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>states2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Arizona"</span>,</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">"California"</span>,</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Connecticut"</span>,</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Kansas"</span>,</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Jersey"</span>,</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Mexico"</span>,</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Oklahoma"</span>,</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Pennsylvania"</span>,</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Texas"</span>,</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Utah"</span>,</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Washington"</span>)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>j40 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  SF <span class="sc">%in%</span> states2</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>v_j40_utah <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"data/viol_pws_j40_utah.qs"</span>) </span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>v_j40 <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"data/viol_pws_j40.qs"</span>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"Tier 1"</span> <span class="sc">|</span> tier <span class="sc">==</span> <span class="st">"Tier 2a"</span>)</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>v_j40 <span class="ot">&lt;-</span> v_j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">!=</span> <span class="st">"Utah"</span>)</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> </span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>   <span class="at">DW =</span> <span class="fu">case_when</span>(GEOID10 <span class="sc">%in%</span> v_j40<span class="sc">$</span>GEOID10 <span class="sc">~</span> <span class="st">"SDWA Violation Present"</span>,</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>                       <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"SDWA Violation Not Present"</span>), <span class="co"># DW indicator with Tier 2 Utah </span></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>   <span class="at">DW_ut1 =</span> <span class="fu">case_when</span>( ((GEOID10 <span class="sc">%in%</span> v_j40<span class="sc">$</span>GEOID10 <span class="sc">&amp;</span> SF <span class="sc">!=</span> <span class="st">"Utah"</span>) <span class="sc">|</span> (GEOID10 <span class="sc">%in%</span> v_j40_utah<span class="sc">$</span>GEOID10)) <span class="sc">~</span> <span class="st">"SDWA Violation Present"</span>,</span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>                       <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"SDWA Violation Not Present"</span>) <span class="co"># DW indicator with Tier 1 Utah</span></span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40_dw <span class="sc">%&gt;%</span></span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">dw_disadv =</span> (DW <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> M_EBSI <span class="sc">==</span> <span class="dv">1</span>),</span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">dw_disadv_ut1 =</span> (DW_ut1 <span class="sc">==</span><span class="dv">1</span> <span class="sc">&amp;</span> M_EBSI <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>states2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Arizona"</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">"California"</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Connecticut"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Kansas"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Jersey"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"New Mexico"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Oklahoma"</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Pennsylvania"</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Texas"</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Utah"</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Washington"</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>j40 <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  SF <span class="sc">%in%</span> states2</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>v_j40_utah <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"data/viol_pws_j40_utah.qs"</span>) </span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>v_j40 <span class="ot">&lt;-</span> <span class="fu">qread</span>(<span class="st">"data/viol_pws_j40.qs"</span>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"Tier 1"</span> <span class="sc">|</span> tier <span class="sc">==</span> <span class="st">"Tier 2a"</span>)</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>v_j40 <span class="ot">&lt;-</span> v_j40 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(SF <span class="sc">!=</span> <span class="st">"Utah"</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40 <span class="sc">%&gt;%</span> </span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>   <span class="at">DW =</span> <span class="fu">case_when</span>(GEOID10 <span class="sc">%in%</span> v_j40<span class="sc">$</span>GEOID10 <span class="sc">~</span> <span class="st">"SDWA Violation Present"</span>,</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>                       <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"SDWA Violation Not Present"</span>), <span class="co"># DW indicator with Tier 2 Utah </span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>   <span class="at">DW_ut1 =</span> <span class="fu">case_when</span>( ((GEOID10 <span class="sc">%in%</span> v_j40<span class="sc">$</span>GEOID10 <span class="sc">&amp;</span> SF <span class="sc">!=</span> <span class="st">"Utah"</span>) <span class="sc">|</span> (GEOID10 <span class="sc">%in%</span> v_j40_utah<span class="sc">$</span>GEOID10)) <span class="sc">~</span> <span class="st">"SDWA Violation Present"</span>,</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>                       <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"SDWA Violation Not Present"</span>) <span class="co"># DW indicator with Tier 1 Utah</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40_dw <span class="sc">%&gt;%</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">dw_disadv =</span> (DW <span class="sc">==</span> <span class="st">"SDWA Violation Present"</span> <span class="sc">&amp;</span> M_EBSI <span class="sc">==</span> <span class="dv">1</span>),</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">dw_disadv_ut1 =</span> (DW_ut1 <span class="sc">==</span> <span class="st">"SDWA Violation Present"</span> <span class="sc">&amp;</span> M_EBSI <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -627,585 +601,105 @@ chr (3): shapefile_column, column_name, column_description
 <div class="cell">
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40_dw <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_disadv =</span> <span class="fu">case_when</span>(</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      SM_C <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST disadvantaged"</span>,</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Not CEJST disadvantaged"</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_income_educ_threshold =</span> <span class="fu">case_when</span>(</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>      M_EBSI <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST 'low' inc/edu"</span>,</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"CEJST 'high' inc/edu"</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span>  j40_dw <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(DW_ut1,CEJST_disadv) <span class="sc">%&gt;%</span> </span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_totals</span>(<span class="at">where =</span> <span class="fu">c</span>(<span class="st">"row"</span>,<span class="st">"col"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_percentages</span>(<span class="st">"col"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_pct_formatting</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_ns</span>() </span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40_dw <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_disadv =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>      SM_C <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST disadvantaged"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Not CEJST disadvantaged"</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_income_educ_threshold =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>      M_EBSI <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST 'low' inc/edu"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"CEJST 'high' inc/edu"</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span>  j40_dw <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(DW_ut1,CEJST_disadv) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_totals</span>(<span class="at">where =</span> <span class="fu">c</span>(<span class="st">"row"</span>,<span class="st">"col"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_percentages</span>(<span class="st">"col"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_pct_formatting</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_ns</span>() </span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output-display">
-<table class="table table-sm table-striped">
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 27%">
-<col style="width: 17%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">88.1% (7135)</td>
-<td style="text-align: left;">89.2% (15324)</td>
-<td style="text-align: left;">88.9% (22459)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">11.9% (961)</td>
-<td style="text-align: left;">10.8% (1850)</td>
-<td style="text-align: left;">11.1% (2811)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (8096)</td>
-<td style="text-align: left;">100.0% (17174)</td>
-<td style="text-align: left;">100.0% (25270)</td>
-</tr>
-</tbody>
-</table>
-</div>
 </div>
 <ul>
 <li><p>Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State</p>
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40_dw <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_disadv =</span> <span class="fu">case_when</span>(</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>      SM_C <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST disadvantaged"</span>,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Not CEJST disadvantaged"</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_income_educ_threshold =</span> <span class="fu">case_when</span>(</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>      M_EBSI <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST 'low' inc/edu"</span>,</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"CEJST 'high' inc/edu"</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(DW_ut1,CEJST_disadv,SF) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_totals</span>(<span class="at">where =</span> <span class="fu">c</span>(<span class="st">"row"</span>,<span class="st">"col"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_percentages</span>(<span class="st">"col"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_pct_formatting</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_ns</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">walk2</span>(<span class="fu">names</span>(.), <span class="sc">~</span> <span class="fu">print</span>(<span class="fu">kable</span>(.x, <span class="at">caption =</span> .y)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<table class="table">
-<caption>Arizona</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">92.9% (459)</td>
-<td style="text-align: left;">96.3% (994)</td>
-<td style="text-align: left;">95.2% (1453)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">7.1% (35)</td>
-<td style="text-align: left;">3.7% (38)</td>
-<td style="text-align: left;">4.8% (73)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (494)</td>
-<td style="text-align: left;">100.0% (1032)</td>
-<td style="text-align: left;">100.0% (1526)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>California</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">96.8% (2815)</td>
-<td style="text-align: left;">98.0% (5049)</td>
-<td style="text-align: left;">97.6% (7864)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">3.2% (92)</td>
-<td style="text-align: left;">2.0% (101)</td>
-<td style="text-align: left;">2.4% (193)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (2907)</td>
-<td style="text-align: left;">100.0% (5150)</td>
-<td style="text-align: left;">100.0% (8057)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>Connecticut</caption>
-<colgroup>
-<col style="width: 32%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 15%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">96.5% (165)</td>
-<td style="text-align: left;">95.8% (634)</td>
-<td style="text-align: left;">95.9% (799)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">3.5% (6)</td>
-<td style="text-align: left;">4.2% (28)</td>
-<td style="text-align: left;">4.1% (34)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (171)</td>
-<td style="text-align: left;">100.0% (662)</td>
-<td style="text-align: left;">100.0% (833)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>Kansas</caption>
-<colgroup>
-<col style="width: 32%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 15%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">90.2% (184)</td>
-<td style="text-align: left;">81.3% (460)</td>
-<td style="text-align: left;">83.6% (644)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">9.8% (20)</td>
-<td style="text-align: left;">18.7% (106)</td>
-<td style="text-align: left;">16.4% (126)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (204)</td>
-<td style="text-align: left;">100.0% (566)</td>
-<td style="text-align: left;">100.0% (770)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>New Jersey</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">61.2% (301)</td>
-<td style="text-align: left;">68.1% (1033)</td>
-<td style="text-align: left;">66.4% (1334)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">38.8% (191)</td>
-<td style="text-align: left;">31.9% (485)</td>
-<td style="text-align: left;">33.6% (676)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (492)</td>
-<td style="text-align: left;">100.0% (1518)</td>
-<td style="text-align: left;">100.0% (2010)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>New Mexico</caption>
-<colgroup>
-<col style="width: 32%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 15%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">73.0% (165)</td>
-<td style="text-align: left;">89.4% (244)</td>
-<td style="text-align: left;">82.0% (409)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">27.0% (61)</td>
-<td style="text-align: left;">10.6% (29)</td>
-<td style="text-align: left;">18.0% (90)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (226)</td>
-<td style="text-align: left;">100.0% (273)</td>
-<td style="text-align: left;">100.0% (499)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>Oklahoma</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">66.5% (300)</td>
-<td style="text-align: left;">78.0% (464)</td>
-<td style="text-align: left;">73.0% (764)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">33.5% (151)</td>
-<td style="text-align: left;">22.0% (131)</td>
-<td style="text-align: left;">27.0% (282)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (451)</td>
-<td style="text-align: left;">100.0% (595)</td>
-<td style="text-align: left;">100.0% (1046)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>Pennsylvania</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">87.4% (653)</td>
-<td style="text-align: left;">85.1% (2102)</td>
-<td style="text-align: left;">85.6% (2755)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">12.6% (94)</td>
-<td style="text-align: left;">14.9% (369)</td>
-<td style="text-align: left;">14.4% (463)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (747)</td>
-<td style="text-align: left;">100.0% (2471)</td>
-<td style="text-align: left;">100.0% (3218)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>Texas</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">85.8% (1776)</td>
-<td style="text-align: left;">86.0% (2748)</td>
-<td style="text-align: left;">85.9% (4524)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">14.2% (293)</td>
-<td style="text-align: left;">14.0% (448)</td>
-<td style="text-align: left;">14.1% (741)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (2069)</td>
-<td style="text-align: left;">100.0% (3196)</td>
-<td style="text-align: left;">100.0% (5265)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>Utah</caption>
-<colgroup>
-<col style="width: 32%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 15%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">94.7% (72)</td>
-<td style="text-align: left;">86.3% (442)</td>
-<td style="text-align: left;">87.4% (514)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">5.3% (4)</td>
-<td style="text-align: left;">13.7% (70)</td>
-<td style="text-align: left;">12.6% (74)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (76)</td>
-<td style="text-align: left;">100.0% (512)</td>
-<td style="text-align: left;">100.0% (588)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>Washington</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">94.6% (245)</td>
-<td style="text-align: left;">96.2% (1154)</td>
-<td style="text-align: left;">96.0% (1399)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">5.4% (14)</td>
-<td style="text-align: left;">3.8% (45)</td>
-<td style="text-align: left;">4.0% (59)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (259)</td>
-<td style="text-align: left;">100.0% (1199)</td>
-<td style="text-align: left;">100.0% (1458)</td>
-</tr>
-</tbody>
-</table></li>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="ot">&lt;-</span> j40_dw <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_disadv =</span> <span class="fu">case_when</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      SM_C <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST disadvantaged"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Not CEJST disadvantaged"</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CEJST_income_educ_threshold =</span> <span class="fu">case_when</span>(</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>      M_EBSI <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"CEJST 'low' inc/edu"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"CEJST 'high' inc/edu"</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>j40_dw <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(DW_ut1,CEJST_disadv,SF) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_totals</span>(<span class="at">where =</span> <span class="fu">c</span>(<span class="st">"row"</span>,<span class="st">"col"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_percentages</span>(<span class="st">"col"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_pct_formatting</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_ns</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">walk2</span>(<span class="fu">names</span>(.), <span class="sc">~</span> <span class="fu">print</span>(<span class="fu">kable</span>(.x, <span class="at">caption =</span> .y)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details></li>
 <li><p>Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator</p></li>
 </ul>
 <details>
 <summary>show the code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span>j40_dw <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) <span class="sc">%&gt;%</span> </span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_totals</span>(<span class="at">where =</span> <span class="fu">c</span>(<span class="st">"row"</span>,<span class="st">"col"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_percentages</span>(<span class="st">"col"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_pct_formatting</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_ns</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">walk2</span>(<span class="fu">names</span>(.), <span class="sc">~</span> <span class="fu">print</span>(<span class="fu">kable</span>(.x, <span class="at">caption =</span> .y)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span>j40_dw <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_totals</span>(<span class="at">where =</span> <span class="fu">c</span>(<span class="st">"row"</span>,<span class="st">"col"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_percentages</span>(<span class="st">"col"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_pct_formatting</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adorn_ns</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">walk2</span>(<span class="fu">names</span>(.), <span class="sc">~</span> <span class="fu">print</span>(<span class="fu">kable</span>(.x, <span class="at">caption =</span> .y)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<table class="table">
-<caption>CEJST ‘high’ inc/edu</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 27%">
-<col style="width: 17%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">91.2% (719)</td>
-<td style="text-align: left;">89.2% (14794)</td>
-<td style="text-align: left;">89.3% (15513)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">8.8% (69)</td>
-<td style="text-align: left;">10.8% (1783)</td>
-<td style="text-align: left;">10.7% (1852)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (788)</td>
-<td style="text-align: left;">100.0% (16577)</td>
-<td style="text-align: left;">100.0% (17365)</td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<caption>CEJST ‘low’ inc/edu</caption>
-<colgroup>
-<col style="width: 31%">
-<col style="width: 23%">
-<col style="width: 28%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">DW_ut1</th>
-<th style="text-align: left;">CEJST disadvantaged</th>
-<th style="text-align: left;">Not CEJST disadvantaged</th>
-<th style="text-align: left;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">SDWA Violation Not Present</td>
-<td style="text-align: left;">87.8% (6416)</td>
-<td style="text-align: left;">88.8% (530)</td>
-<td style="text-align: left;">87.9% (6946)</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">SDWA Violation Present</td>
-<td style="text-align: left;">12.2% (892)</td>
-<td style="text-align: left;">11.2% (67)</td>
-<td style="text-align: left;">12.1% (959)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Total</td>
-<td style="text-align: left;">100.0% (7308)</td>
-<td style="text-align: left;">100.0% (597)</td>
-<td style="text-align: left;">100.0% (7905)</td>
-</tr>
-</tbody>
-</table>
 <ul>
-<li><p>total population</p></li>
-<li><p>measures of income distribution</p></li>
-<li><p>race/ethnicity population distributions</p></li>
+<li>total population (see <a href="https://cgs-earth.github.io/epic-wsb-national-case-study/map.html">map</a>)</li>
+</ul>
+<div class="cell">
+<details>
+<summary>show the code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pop_by_tract_type <span class="ot">&lt;-</span> j40_dw <span class="sc">%&gt;%</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(CEJST_disadv,dw_disadv_ut1) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">population =</span> <span class="fu">sum</span>(TPF,<span class="at">na.rm=</span><span class="cn">TRUE</span>)) </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>pop_by_tract_type <span class="ot">&lt;-</span> pop_by_tract_type <span class="sc">%&gt;%</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    dw_disadv_ut1 <span class="sc">&amp;</span> CEJST_disadv <span class="sc">==</span> <span class="st">"CEJST disadvantaged"</span>  <span class="sc">~</span> <span class="st">"DW violation + CEJST"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>dw_disadv_ut1 <span class="sc">&amp;</span> CEJST_disadv <span class="sc">==</span> <span class="st">"CEJST disadvantaged"</span>  <span class="sc">~</span> <span class="st">"No DW violation + CEJST"</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>dw_disadv_ut1 <span class="sc">&amp;</span> CEJST_disadv <span class="sc">==</span> <span class="st">"Not CEJST disadvantaged"</span>  <span class="sc">~</span> <span class="st">"No DW violation + Not CEJST"</span>,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    dw_disadv_ut1 <span class="sc">&amp;</span> CEJST_disadv <span class="sc">==</span> <span class="st">"Not CEJST disadvantaged"</span>  <span class="sc">~</span> <span class="st">"DW violation + Not CEJST"</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>()</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>table <span class="ot">&lt;-</span> pop_by_tract_type <span class="sc">%&gt;%</span> </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pop_millions =</span> population<span class="sc">/</span><span class="dv">1000000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>population) <span class="sc">%&gt;%</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from=</span>dw_disadv_ut1, <span class="at">values_from =</span> pop_millions) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="st">`</span><span class="at">DW Violation + low income</span><span class="st">`</span><span class="ot">=</span><span class="st">`</span><span class="at">TRUE</span><span class="st">`</span>,</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                                                                                                                                 <span class="st">`</span><span class="at">No DW Violation or not low income</span><span class="st">`</span><span class="ot">=</span><span class="st">`</span><span class="at">FALSE</span><span class="st">`</span>)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>measures of income distribution</li>
+</ul>
+<div class="cell">
+<details>
+<summary>show the code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidycensus)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">census_api_key</span>(<span class="st">"b25f8b1b7bf10561c9cbc3a20a4d2572677f1f05"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">tigris_use_cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>tr <span class="ot">&lt;-</span> tidycensus<span class="sc">::</span><span class="fu">get_acs</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>race/ethnicity population distributions</li>
 </ul>
 </section>
 </section>
@@ -1690,6 +1184,7 @@ This archive has several tables, the relevant one being `SDWA_VIOLATIONS_ENFORCE
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 unzip("data/sdwa.zip", list = TRUE)
 end_date &lt;- as.Date(unzip("data/sdwa.zip", list = TRUE)$Date[11])
 ```
@@ -1699,6 +1194,7 @@ We load the violations table and filter to violations that end later than April 
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 start_date &lt;- end_date - 365*2
 violators &lt;- vroom("data/SDWA_VIOLATIONS_ENFORCEMENT.csv", # read data
                     col_types = cols(.default = "c")) %&gt;%
@@ -1720,6 +1216,7 @@ violators &lt;- vroom("data/SDWA_VIOLATIONS_ENFORCEMENT.csv", # read data
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 violators &lt;- violators %&gt;%
   mutate(
     violation_duration = end - start
@@ -1732,6 +1229,7 @@ violators &lt;- violators %&gt;%
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 violators &lt;- violators %&gt;%
   filter(end &gt;= start_date) %&gt;%
   filter(violation_duration &gt;= 30) %&gt;%
@@ -1745,7 +1243,7 @@ First we download and compress the TEMM layer for quick access in later parts of
 quarto-executable-code-5450563D
 
 ```r
-#| eval= FALSE
+#| eval: false
 download.file(url = "https://www.hydroshare.org/django_irods/rest_download/6f3386bb4bc945028391cfabf1ea252e/data/contents/temm_layer_v1.0.0/temm.geojson/?url_download=True&amp;zipped=False&amp;aggregation=False", destfile = "data/temm.geojson")
 
 temm &lt;- sf::read_sf("data/temm.geojson")
@@ -1758,6 +1256,7 @@ Now we load the file, and filter for only the states with comprehensive Tier 1 a
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 temm &lt;- qread("data/temm.qs")
 states &lt;- c("AZ",
             "CA",
@@ -1787,7 +1286,7 @@ First we download and unzip the data
 quarto-executable-code-5450563D
 
 ```r
-#| eval= FALSE
+#| eval: false
 download.file(url = "https://static-data-screeningtool.geoplatform.gov/data-pipeline/data/score/shapefile/usa.zip", destfile = "data/j40.zip")
 unzip("data/j40.zip", exdir = "data/j40")
 
@@ -1798,6 +1297,7 @@ Then we load it and the data dictionary
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 j40 &lt;- sf::read_sf("data/j40/usa.shp")
 j40_dict &lt;- vroom("data/j40/columns.csv")
 ```
@@ -1807,6 +1307,7 @@ j40_dict &lt;- vroom("data/j40/columns.csv")
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 v &lt;- boundaries %&gt;% 
   filter(pwsid %in% violators$PWSID)
 ```
@@ -1826,7 +1327,7 @@ First we spatially intersect the set of CWS boundaries with the threshold period
 quarto-executable-code-5450563D
 
 ```r
-#| eval= FALSE
+#| eval: false
 states2 &lt;- c("Arizona",
             "California",
             "Connecticut",
@@ -1872,6 +1373,7 @@ Then, we need to construct indicator as framed by CEJST, meaning we assign to ea
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 states2 &lt;- c("Arizona",
             "California",
             "Connecticut",
@@ -1904,8 +1406,8 @@ j40_dw &lt;- j40 %&gt;%
 
 j40_dw &lt;- j40_dw %&gt;%
   mutate(
-    dw_disadv = (DW == 1 &amp; M_EBSI == 1),
-    dw_disadv_ut1 = (DW_ut1 ==1 &amp; M_EBSI == 1)
+    dw_disadv = (DW == "SDWA Violation Present" &amp; M_EBSI == 1),
+    dw_disadv_ut1 = (DW_ut1 == "SDWA Violation Present" &amp; M_EBSI == 1)
   )
     
 
@@ -1921,6 +1423,7 @@ Tract counts in selected states by Drinking Water indicator and current CEJST di
 quarto-executable-code-5450563D
 
 ```r
+#| eval: false
 j40_dw &lt;- j40_dw %&gt;%
   mutate(
     CEJST_disadv = case_when(
@@ -1947,6 +1450,7 @@ j40_dw &lt;- j40_dw %&gt;%
 -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status by State
 
     ```{r, results='asis'}
+#| eval: false
     j40_dw &lt;- j40_dw %&gt;%
       mutate(
         CEJST_disadv = case_when(
@@ -1970,6 +1474,7 @@ j40_dw &lt;- j40_dw %&gt;%
 -   Tract counts in selected states by Drinking Water indicator and current CEJST disadvantage status, by the CEJST non-student low-income socioeconomic indicator
 
 ```{r, results='asis'}
+#| eval: false
 x&lt;-j40_dw %&gt;% st_drop_geometry() %&gt;% 
   tabyl(DW_ut1,CEJST_disadv,CEJST_income_educ_threshold) %&gt;% 
   adorn_totals(where = c("row","col")) %&gt;%
@@ -1980,9 +1485,47 @@ x&lt;-j40_dw %&gt;% st_drop_geometry() %&gt;%
 
 ```
 
--   total population
+-   total population (see [map](https://cgs-earth.github.io/epic-wsb-national-case-study/map.html))
+
+quarto-executable-code-5450563D
+
+```r
+#| eval: false
+pop_by_tract_type &lt;- j40_dw %&gt;% 
+  ungroup() %&gt;%
+  group_by(CEJST_disadv,dw_disadv_ut1) %&gt;% 
+  summarise(population = sum(TPF,na.rm=TRUE)) 
+
+pop_by_tract_type &lt;- pop_by_tract_type %&gt;%
+  mutate(category = case_when(
+    dw_disadv_ut1 &amp; CEJST_disadv == "CEJST disadvantaged"  ~ "DW violation + CEJST",
+    !dw_disadv_ut1 &amp; CEJST_disadv == "CEJST disadvantaged"  ~ "No DW violation + CEJST",
+    !dw_disadv_ut1 &amp; CEJST_disadv == "Not CEJST disadvantaged"  ~ "No DW violation + Not CEJST",
+    dw_disadv_ut1 &amp; CEJST_disadv == "Not CEJST disadvantaged"  ~ "DW violation + Not CEJST"
+  )) %&gt;% ungroup()
+
+table &lt;- pop_by_tract_type %&gt;% 
+  st_drop_geometry() %&gt;% 
+  mutate(pop_millions = population/1000000) %&gt;% 
+  select(-population) %&gt;%
+  pivot_wider(names_from=dw_disadv_ut1, values_from = pop_millions) %&gt;% 
+  rename(`DW Violation + low income`=`TRUE`,
+                                                                                                                                 `No DW Violation or not low income`=`FALSE`)
+kable(table)
+
+```
 
 -   measures of income distribution
+
+quarto-executable-code-5450563D
+
+```r
+#| eval: false
+library(tidycensus)
+census_api_key("b25f8b1b7bf10561c9cbc3a20a4d2572677f1f05")
+options(tigris_use_cache = TRUE)
+tr &lt;- tidycensus::get_acs()
+```
 
 -   race/ethnicity population distributions
 
@@ -1990,7 +1533,7 @@ x&lt;-j40_dw %&gt;% st_drop_geometry() %&gt;%
 
 Will discuss results in detail here.
 
-### Headline 1: 
+### Headline 1:
 
 959 "poor" tract/communities across the 11 states were identified to have safe drinking water violations, 67 of which were not previously identified as disadvantaged in the CEJST</code></pre>
 </div></div></div></div></div>
