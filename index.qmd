@@ -407,8 +407,8 @@ j40_dw <- j40 %>%
 
 j40_dw <- j40_dw %>%
   mutate(
-    dw_disadv = (DW == 1 & M_EBSI == 1),
-    dw_disadv_ut1 = (DW_ut1 ==1 & M_EBSI == 1)
+    dw_disadv = (DW == "SDWA Violation Present" & M_EBSI == 1),
+    dw_disadv_ut1 = (DW_ut1 == "SDWA Violation Present" & M_EBSI == 1)
   )
     
 
@@ -483,7 +483,39 @@ x<-j40_dw %>% st_drop_geometry() %>%
 
 -   total population
 
+```{r}
+pop_by_tract_type <- j40_dw %>% 
+  ungroup() %>%
+  group_by(CEJST_disadv,dw_disadv_ut1) %>% 
+  summarise(population = sum(TPF,na.rm=TRUE)) 
+
+pop_by_tract_type <- pop_by_tract_type %>%
+  mutate(category = case_when(
+    dw_disadv_ut1 & CEJST_disadv == "CEJST disadvantaged"  ~ "DW violation + CEJST",
+    !dw_disadv_ut1 & CEJST_disadv == "CEJST disadvantaged"  ~ "No DW violation + CEJST",
+    !dw_disadv_ut1 & CEJST_disadv == "Not CEJST disadvantaged"  ~ "No DW violation + Not CEJST",
+    dw_disadv_ut1 & CEJST_disadv == "Not CEJST disadvantaged"  ~ "DW violation + Not CEJST"
+  )) %>% ungroup()
+
+table <- pop_by_tract_type %>% 
+  st_drop_geometry() %>% 
+  mutate(pop_millions = population/1000000) %>% 
+  select(-population) %>%
+  pivot_wider(names_from=dw_disadv_ut1, values_from = pop_millions) %>% 
+  rename(`DW Violation + low income`=`TRUE`,
+                                                                                                                                 `No DW Violation or not low income`=`FALSE`)
+kable(table)
+
+```
+
 -   measures of income distribution
+
+```{r}
+library(tidycensus)
+census_api_key("b25f8b1b7bf10561c9cbc3a20a4d2572677f1f05")
+options(tigris_use_cache = TRUE)
+tr <- tidycensus::get_acs()
+```
 
 -   race/ethnicity population distributions
 
@@ -491,6 +523,6 @@ x<-j40_dw %>% st_drop_geometry() %>%
 
 Will discuss results in detail here.
 
-### Headline 1: 
+### Headline 1:
 
 959 "poor" tract/communities across the 11 states were identified to have safe drinking water violations, 67 of which were not previously identified as disadvantaged in the CEJST
